@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>個案 #002｜群暉 NAS 遭 C3RB3R 勒索軟體攻擊：被遺忘的更新與備份｜從新聞，看個案</title>
+<meta name="description" content="從 iThome 報導出發，以個案研究方式解析 C3RB3R 勒索軟體攻擊群暉 NAS 事件：入侵途徑爭議、時間軸、勒索手法、與 PHP2Shell 的關聯，以及管理、技術、法律、企業因應四大面向的討論題與顧問參考答案。">
+<link rel="stylesheet" href="../../assets/css/style.css">
+<link rel="icon" href="../../assets/img/characters/arale-laugh.png">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="container">
+    <a class="brand" href="../../index.html"><span class="logo">🔎</span><span>從新聞，看個案</span></a>
+    <nav class="toc" aria-label="本頁目錄">
+      <a href="#guide">新聞導讀</a>
+      <a href="#source">原始報導</a>
+      <a href="#links">相關新聞與公告</a>
+      <a href="#background">個案背景</a>
+      <a href="#timeline">事件時間軸</a>
+      <a href="#tech">技術解析</a>
+      <a href="#sim">攻防模擬</a>
+      <a href="#impact">影響與數據</a>
+      <a href="#keypoints">重點整理</a>
+      <a href="#discussion">問題討論</a>
+      <a href="#audit">稽核視角</a>
+      <a href="#checklist">行動清單</a>
+      <a href="#refs">資料來源</a>
+    </nav>
+  </div>
+  <div class="progress"></div>
+</header>
+
+<!-- ================= HERO ================= -->
+<section class="hero">
+  <div class="container">
+    <div>
+      <div class="eyebrow">
+        <span class="tag hot">個案 #002</span>
+        <span class="tag teal">文字新聞</span>
+        <span class="tag">勒索軟體</span><span class="tag">修補管理</span><span class="tag">備份與復原</span>
+      </div>
+      <h1>群暉 NAS 遭 C3RB3R 勒索<br><span class="hl">被遺忘的更新與備份</span></h1>
+      <p class="lead">攻擊者鎖定仍在執行舊版 DSM 的群暉 NAS，把檔案加密成 <code style="background:rgba(255,255,255,.12);color:#fff">.L0CK3D</code> 並勒索比特幣。原廠說是「2024 年 12 月就修好的漏洞」，資安業者說是「今年 9 月才修的新漏洞」，港媒則懷疑與 PHP2Shell 有關。說法不一，但結論都一樣：<b>沒更新、對外曝露、備份放在同一台機器上</b>，就是勒索軟體最愛的組合。</p>
+      <div class="hero-meta">
+        <div>📰 來源：<b>iThome 新聞</b></div>
+        <div>🗓 刊出：<b>2026-10-30</b></div>
+        <div>🦠 家族：<b>C3RB3R（Cerber 變種）</b></div>
+        <div>⚠️ 相關漏洞 CVSS：<b>9.8（重大）</b></div>
+      </div>
+    </div>
+    <div class="hero-cast" aria-hidden="true">
+      <img class="allan" src="../../assets/img/characters/allan-full.png" alt="">
+      <img class="arale" src="../../assets/img/characters/arale-holo.png" alt="">
+    </div>
+  </div>
+  <div class="ticker" aria-hidden="true">
+    <div class="track">
+      <span>群暉 10/29 發布聲明：攻擊者利用 2024 年 12 月已修補的弱點，鎖定舊版 DSM</span>
+      <span>360 反勒索團隊：入侵途徑為 9/18 修補的 CVE-2026-13639、CVE-2026-13684</span>
+      <span>檔案被改為 .L0CK3D，各資料夾留下 read-me3.txt 勒索訊息</span>
+      <span>目前未見公開的免費解密工具</span>
+      <span>群暉建議：立即更新 DSM 並啟用自動更新</span>
+      <span>群暉 10/29 發布聲明：攻擊者利用 2024 年 12 月已修補的弱點，鎖定舊版 DSM</span>
+      <span>360 反勒索團隊：入侵途徑為 9/18 修補的 CVE-2026-13639、CVE-2026-13684</span>
+      <span>檔案被改為 .L0CK3D，各資料夾留下 read-me3.txt 勒索訊息</span>
+      <span>目前未見公開的免費解密工具</span>
+      <span>群暉建議：立即更新 DSM 並啟用自動更新</span>
+    </div>
+  </div>
+</section>
+
+<main class="container">
+
+<!-- ================= 1. 新聞導讀 ================= -->
+<section class="block" id="guide" data-tip="又見面了！這次的主角是很多公司都有的 <b>NAS</b>。你們公司的 NAS 多久沒更新了呢？" data-tip-img="../../assets/img/characters/arale-wave.png">
+  <div class="sec-head reveal">
+    <div class="sec-num">01</div>
+    <div><h2>新聞導讀</h2><p>Allan Lo 顧問 × AI 小助手阿拉蕾</p></div>
+  </div>
+  <div class="dialogue">
+    <div class="say arale">
+      <div class="avatar"><img src="../../assets/img/characters/arale-sad.png" alt="阿拉蕾"></div>
+      <div class="bubble"><span class="who">阿拉蕾</span><p>Allan 老師⋯⋯我們業務部那台放報價單的 NAS，好像就是群暉的。新聞說有人的檔案全部變成 <code>.L0CK3D</code>，打不開了！</p></div>
+    </div>
+    <div class="say allan">
+      <div class="avatar"><img src="../../assets/img/characters/allan-surprised.png" alt="Allan Lo 顧問"></div>
+      <div class="bubble"><span class="who">Allan Lo 顧問</span><p>先別慌，第一個問題：<b>那台 NAS 的 DSM 版本是多少？上次更新是什麼時候？</b>群暉說這次被利用的漏洞，早在 2024 年 12 月就修好了。換句話說，受害者大多是將近兩年沒更新的設備。</p></div>
+    </div>
+    <div class="say arale">
+      <div class="avatar"><img src="../../assets/img/characters/arale-confused.png" alt="阿拉蕾"></div>
+      <div class="bubble"><span class="who">阿拉蕾</span><p>可是另一家資安公司說是今年 9 月才修的新漏洞，還有港媒說跟上次的 PHP2Shell 有關⋯⋯到底該聽誰的？</p></div>
+    </div>
+    <div class="say allan">
+      <div class="avatar"><img src="../../assets/img/characters/allan-point.png" alt="Allan Lo 顧問"></div>
+      <div class="bubble"><span class="who">Allan Lo 顧問</span><p>好問題！這正是本個案的教學重點：<b>歸因還沒定案時，企業不用等答案</b>。不管是哪個漏洞，更新到最新版、把管理介面從網路上收回來、確認備份不在同一台機器上——這些「無悔行動」都該立刻做。</p></div>
+    </div>
+    <div class="say arale">
+      <div class="avatar"><img src="../../assets/img/characters/arale-think.png" alt="阿拉蕾"></div>
+      <div class="bubble"><span class="who">阿拉蕾</span><p>我們的 NAS 有做 RAID 耶，硬碟壞一顆也沒關係，這樣算有備份吧？</p></div>
+    </div>
+    <div class="say allan">
+      <div class="avatar"><img src="../../assets/img/characters/allan-worried.png" alt="Allan Lo 顧問"></div>
+      <div class="bubble"><span class="who">Allan Lo 顧問</span><p>這是最常見的誤會！<b>RAID 是防硬碟故障，不是備份</b>。勒索軟體加密時，RAID 會「很忠實地」把加密後的檔案同步到每一顆硬碟。等一下的攻防模擬器，你自己試試看就知道了。</p></div>
+    </div>
+    <div class="say arale">
+      <div class="avatar"><img src="../../assets/img/characters/arale-fight.png" alt="阿拉蕾"></div>
+      <div class="bubble"><span class="who">阿拉蕾</span><p>好！那我們一樣從<b>管理、技術、法律、企業因應</b>四個面向來拆解這個個案！</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 2. 原始報導 ================= -->
+<section class="block" id="source" data-tip="這則是文字新聞，建議點進 iThome 原文閱讀，再回來對照整理喔！" data-tip-img="../../assets/img/characters/arale-explain.png">
+  <div class="sec-head reveal">
+    <div class="sec-num">02</div>
+    <div><h2>原始報導</h2><p>群暉 NAS 遭 C3RB3R 勒索軟體攻擊，原廠呼籲用戶盡速更新 DSM 系統</p></div>
+  </div>
+  <div class="grid g2">
+    <div class="card news-card reveal">
+      <div class="masthead"><span>iThome 新聞</span><span class="small muted">2026-10-30</span></div>
+      <h3>群暉 NAS 遭 C3RB3R 勒索軟體攻擊，原廠呼籲用戶盡速更新 DSM 系統</h3>
+      <blockquote>報導重點：群暉於 10 月 29 日證實有攻擊者以 C3RB3R 勒索軟體攻擊 NAS，利用 2024 年 12 月已修補的漏洞，鎖定仍執行舊版 DSM 的裝置加密檔案、勒索贖金。報導提及 CVE-2024-10441、CVE-2024-50629、CVE-2024-10445；港媒 HKEPC 將感染事件與 PHP2Shell 漏洞連結，群暉則向媒體表示與 PHP 漏洞無關。群暉呼籲未更新者立即更新並啟用自動更新。</blockquote>
+      <p class="small muted" style="margin:0">（以上為本站依公開資訊整理之摘要，完整內容請閱讀原文。）</p>
+      <div><a class="btn" href="https://www.ithome.com.tw/news/180115" target="_blank" rel="noopener" style="text-decoration:none; display:inline-block">閱讀 iThome 原文 ↗</a></div>
+    </div>
+    <div class="card reveal d1">
+      <h3>📌 個案基本資料</h3>
+      <dl class="factbox">
+        <dt>報導來源</dt><dd>iThome 新聞（2026-10-30）</dd>
+        <dt>事件名稱</dt><dd>C3RB3R 勒索軟體攻擊群暉 NAS</dd>
+        <dt>勒索家族</dt><dd>C3RB3R，Cerber 勒索軟體家族變種</dd>
+        <dt>受害特徵</dt><dd>檔案副檔名改為 <code>.L0CK3D</code>；各資料夾出現 <code>read-me3.txt</code></dd>
+        <dt>原廠說法</dt><dd>利用 2024 年 12 月已修補的弱點（Synology-SA-24:20）</dd>
+        <dt>其他說法</dt><dd>360：CVE-2026-13639／13684（SA-26:13，2026/9/18 修補）；港媒：PHP2Shell</dd>
+        <dt>修補版本</dt><dd>DSM 7.4-90075／7.3.2-86009-4／7.2.2-72806-9／7.2.1-69057-12 以上（同時涵蓋上述兩份公告）</dd>
+        <dt>個案主題</dt><dd>修補管理、對外曝露、備份與復原、歸因不確定下的決策</dd>
+      </dl>
+      <p class="note small" style="margin-top:14px">各方對入侵途徑說法不一，本頁並列呈現並標註來源；以群暉官方安全公告為準。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 3. 相關新聞與公告 ================= -->
+<section class="block" id="links" data-tip="這裡整理了原廠公告、各國通報、國際報導和歷史事件。做內部宣導時可以直接引用！" data-tip-img="../../assets/img/characters/arale-present.png">
+  <div class="sec-head reveal">
+    <div class="sec-num">03</div>
+    <div><h2>相關新聞、公告與連結</h2><p>一頁掌握官方說法、技術分析與歷史脈絡</p></div>
+  </div>
+  <div class="linkhub">
+    <div class="card reveal">
+      <h3>🏢 原廠公告（群暉 Synology）</h3>
+      <ul class="links">
+        <li><span class="badge off">官方</span><a href="https://www.synology.com/zh-tw/company/news/article/C3RB3R" target="_blank" rel="noopener">群暉新聞稿：呼籲使用者更新 DSM（中文）</a><span class="lm">2026-10-29｜指攻擊者利用 2024 年 12 月已修補弱點，建議立即更新並啟用自動更新</span></li>
+        <li><span class="badge off">官方</span><a href="https://www.synology.com/en-global/company/news/article/C3RB3R" target="_blank" rel="noopener">Synology urges users to update DSM（英文）</a><span class="lm">2026-10-29｜同一新聞稿英文版</span></li>
+        <li><span class="badge off">安全公告</span><a href="https://www.synology.com/zh-tw/security/advisory/Synology_SA_24_20" target="_blank" rel="noopener">Synology-SA-24:20 DSM（PWN2OWN 2024）</a><span class="lm">2024-11-05 發布、2024-12-05 補齊 DSM 6.2｜CVE-2024-10441（9.8）、CVE-2024-50629、CVE-2024-10445</span></li>
+        <li><span class="badge off">安全公告</span><a href="https://www.synology.com/zh-tw/security/advisory/Synology_SA_26_13" target="_blank" rel="noopener">Synology-SA-26:13 DSM</a><span class="lm">2026-09-18｜CVE-2026-13639、CVE-2026-13684（皆 9.8，免驗證）等 8 項</span></li>
+        <li><span class="badge off">官方</span><a href="https://www.synology.com/en-global/company/news/article/php2shell" target="_blank" rel="noopener">Synology Statement on PHP2Shell Vulnerabilities</a><span class="lm">2026-10-22｜SA-26:14，影響 Web Station、WordPress、Calendar 等依賴 PHP 的套件，需透過套件中心更新 PHP</span></li>
+      </ul>
+    </div>
+    <div class="card reveal d1">
+      <h3>🏛 政府與 CERT 通報</h3>
+      <ul class="links">
+        <li><span class="badge off">新加坡</span><a href="https://www.csa.gov.sg/alerts-and-advisories/alerts/al-2026-127/" target="_blank" rel="noopener">CSA AL-2026-127：Multiple Vulnerabilities in Synology DSM</a><span class="lm">2026-09-23｜針對 SA-26:13 漏洞發布警示</span></li>
+        <li><span class="badge off">台灣</span><a href="https://www.twcert.org.tw/" target="_blank" rel="noopener">TWCERT/CC 台灣電腦網路危機處理暨協調中心</a><span class="lm">企業資安事件通報與協處窗口</span></li>
+        <li><span class="badge off">台灣</span><a href="https://www.synology.com/zh-tw/company/news/article/Synology_TWCERT" target="_blank" rel="noopener">群暉 × TWCERT/CC 聯合聲明（2019）</a><span class="lm">歷史參考：2019 年全球 NAS 遭暴力破解勒索，雙方合作撤下攻擊主機</span></li>
+        <li><span class="badge">美國</span><a href="https://www.ic3.gov/" target="_blank" rel="noopener">FBI IC3 網路犯罪通報</a><span class="lm">部分技術簡報建議受害者向 IC3 通報</span></li>
+      </ul>
+    </div>
+    <div class="card reveal">
+      <h3>🔬 技術分析與國際報導</h3>
+      <ul class="links">
+        <li><a href="https://www.trebsec.com/briefs/2026-10-29-synology-c3rb3r-ransomware.html" target="_blank" rel="noopener">TrebSec：C3RB3R Is Encrypting Synology NAS Devices That Missed a September Patch</a><span class="lm">2026-10-29｜提到 DSM 7.4.1 受害案例、復原與強化建議</span></li>
+        <li><a href="https://pwn.watch/i/synology-dsm-cerber-c3rb3r-ransomware-cve-2026-13639-13684" target="_blank" rel="noopener">pwn.watch：C3RB3R hits Synology NAS through CVE-2026-13639 / 13684</a><span class="lm">事件追蹤頁，彙整 360 通報</span></li>
+        <li><a href="https://www.it-connect.tech/c3rb3r-ransomware-is-hitting-synology-nas-devices-how-to-protect-yours/" target="_blank" rel="noopener">IT-Connect：C3RB3R ransomware is hitting Synology NAS devices</a><span class="lm">2026-10-29｜防護步驟；「NAS 即使有 RAID 也不是備份」</span></li>
+        <li><a href="https://cyberexperts.com/2026-10-30-synology-dsm-c3rb3r-ransomware/" target="_blank" rel="noopener">CyberExperts：C3RB3R Ransomware Hits Synology NAS, Update DSM</a><span class="lm">2026-10-30｜偵測與應變步驟</span></li>
+        <li><a href="https://techaeris.com/2026/10/31/synology-nas-ransomware-alert-c3rb3r/" target="_blank" rel="noopener">Techaeris：Synology NAS Ransomware Alert: C3RB3R Locks Files With .L0CK3D</a><span class="lm">2026-10-31｜加密方式、贖金金額（單一來源）</span></li>
+      </ul>
+    </div>
+    <div class="card reveal d1">
+      <h3>🔗 延伸關聯</h3>
+      <ul class="links">
+        <li><span class="badge case">本站個案</span><a href="../2026-10-php2shell/index.html">個案 #001：AI 揪出潛藏十多年的 PHP 漏洞（PHP2Shell）</a><span class="lm">港媒將本案與 PHP2Shell 連結；NAS 內建 PHP 的修補依賴原廠</span></li>
+        <li><a href="https://techradar.com/pro/security/php-security-issues-could-also-threaten-your-nas-device-but-not-every-vendor-is-able-to-patch-just-yet" target="_blank" rel="noopener">TechRadar：PHP security issues could also threaten your NAS device</a><span class="lm">PHP2Shell 期間各 NAS 廠商的修補落差（QNAP 公告 QSA-26-18 一度建議先移出網路）</span></li>
+        <li><a href="https://xenospectrum.com/php2shell-nas-qnap-synology-patch-gap/" target="_blank" rel="noopener">XenoSpectrum：PHP2Shell 與 NAS 的修補缺口</a><span class="lm">群暉、威聯通、TerraMaster、Ugreen、Asustor 修補進度比較</span></li>
+        <li><a href="https://www.ithome.com.tw/news/180105" target="_blank" rel="noopener">iThome：全家行動購部分會員資料遭非法擷取，起因是委外廠商 91APP 資料庫遭自動化攻擊</a><span class="lm">同週國內資安新聞｜委外與供應鏈風險</span></li>
+        <li><a href="https://www.ithome.com.tw/tags/nas" target="_blank" rel="noopener">iThome NAS 標籤：歷年 NAS 資安新聞</a><span class="lm">SynoLocker（2014）、eCh0raix（2019）、DeadBolt（2022）等 NAS 勒索事件</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 4. 個案背景 ================= -->
+<section class="block" id="background" data-tip="NAS 常被當成「買來插電就好」的家電，但它其實是一台 24 小時連網的 Linux 伺服器！" data-tip-img="../../assets/img/characters/arale-think.png">
+  <div class="sec-head reveal">
+    <div class="sec-num">04</div>
+    <div><h2>個案背景：為什麼 NAS 一再成為勒索目標？</h2><p>集中存放、對外連線、少人管理，三個條件湊在一起</p></div>
+  </div>
+  <div class="grid g3">
+    <div class="card reveal">
+      <h3>🗄 資料集中的金庫</h3>
+      <p>中小企業常把共用檔案、會計帳、設計圖，甚至「備份」都放在 NAS 上。攻擊者只要拿下一台，就能鎖住整間公司的資料，議價能力極高。</p>
+    </div>
+    <div class="card reveal d1">
+      <h3>🌐 為了方便而對外開放</h3>
+      <p>為了在家或出差時存取檔案，許多 NAS 直接把管理介面或服務透過路由器埠轉發開放到網際網路，等於把伺服器的大門直接對全世界開放。</p>
+    </div>
+    <div class="card reveal d2">
+      <h3>🙈 沒有人負責更新</h3>
+      <p>NAS 常是部門自購、廠商代裝，不在 IT 資產清冊與弱點掃描範圍內。擔心更新導致服務中斷，乾脆「能用就不要動」，一放就是好幾年。</p>
+    </div>
+  </div>
+  <div class="card reveal" style="margin-top:20px">
+    <h3>📜 NAS 勒索簡史：同樣的劇本一再上演</h3>
+    <div class="table-scroll">
+      <table class="tbl">
+        <thead><tr><th>年份</th><th>事件</th><th>主要入侵方式</th><th>給我們的教訓</th></tr></thead>
+        <tbody>
+          <tr><td>2014</td><td>SynoLocker（群暉）</td><td>舊版 DSM 漏洞</td><td>對外曝露＋未更新</td></tr>
+          <tr><td>2019</td><td>eCh0raix 等（群暉、威聯通）</td><td>暴力破解預設 admin 帳號與弱密碼</td><td>帳號管理、雙重驗證；群暉與 TWCERT/CC 合作撤下攻擊主機</td></tr>
+          <tr><td>2022</td><td>DeadBolt（威聯通、華芸）</td><td>NAS 系統漏洞</td><td>廠商一度強制推送更新，引發「自動更新」爭議</td></tr>
+          <tr><td><b>2026</b></td><td><b>C3RB3R（群暉）</b></td><td><b>已修補但未更新的 DSM 漏洞（途徑仍有爭議）</b></td><td><b>修補管理、對外曝露、備份隔離</b></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 5. 時間軸 ================= -->
+<section class="block" id="timeline" data-tip="注意看：修補釋出到被大規模利用，中間隔了將近兩年。漏洞沒修，就會一直在那裡等人來敲門。" data-tip-img="../../assets/img/characters/arale-surprised.png">
+  <div class="sec-head reveal">
+    <div class="sec-num">05</div>
+    <div><h2>事件時間軸</h2><p>從 Pwn2Own 漏洞、兩次修補，到勒索攻擊爆發</p></div>
+  </div>
+  <div class="grid g2">
+    <div class="timeline">
+      <div class="fill"></div>
+      <div class="tl-phase">PHASE 1 · 漏洞與修補</div>
+      <div class="tl-item"><div class="tl-date">2024/10</div><h4>Pwn2Own Ireland 2024</h4><p>包含台灣 DEVCORE 團隊在內的研究人員，在駭客競賽中展示群暉 DSM 遠端程式碼執行漏洞。</p></div>
+      <div class="tl-item"><div class="tl-date">2024/11/05 – 12/05</div><h4>群暉發布 SA-24:20 並陸續修補</h4><p>CVE-2024-10441（CVSS 9.8）等漏洞，12/5 補齊 DSM 6.2。群暉本次所稱「2024 年 12 月已修補」即指此公告。</p></div>
+      <div class="tl-item"><div class="tl-date">2026/09/18</div><h4>群暉發布 SA-26:13</h4><p>修補 CVE-2026-13639（登入邏輯熵不足）、CVE-2026-13684（SCGI 輸出編碼）等，均為 9.8、免驗證，無暫時緩解措施。</p></div>
+      <div class="tl-item"><div class="tl-date">2026/09/23</div><h4>新加坡 CSA 發布警示</h4><p>AL-2026-127 呼籲儘速更新 DSM。</p></div>
+      <div class="tl-phase">PHASE 2 · 攻擊爆發</div>
+      <div class="tl-item alert"><div class="tl-date">2026/10 月初</div><h4>C3RB3R 開始加密 NAS</h4><p>論壇陸續出現受害求助：檔案變成 .L0CK3D，資料夾內出現 read-me3.txt。</p></div>
+      <div class="tl-item"><div class="tl-date">2026/10/21 – 10/22</div><h4>PHP2Shell 公開（見個案 #001）</h4><p>群暉 10/22 發布 PHP2Shell 聲明（SA-26:14），要求透過套件中心更新 PHP；威聯通公告一度尚無修補版本，建議先將 NAS 移出網際網路。</p></div>
+      <div class="tl-item alert"><div class="tl-date">2026/10/25 前後</div><h4>2024 漏洞公開 PoC（單一來源）</h4><p>有報導指 CVE-2024-10441 的技術分析與概念驗證程式出現在 GitHub，降低了攻擊門檻。</p></div>
+      <div class="tl-phase">PHASE 3 · 揭露與回應</div>
+      <div class="tl-item alert"><div class="tl-date">2026/10/29</div><h4>360 通報、群暉發布聲明</h4><p>360 反勒索團隊指入侵途徑為 SA-26:13 漏洞；群暉新聞稿則指為 2024 年 12 月已修補弱點，呼籲立即更新、啟用自動更新。</p></div>
+      <div class="tl-item"><div class="tl-date">2026/10/30</div><h4>iThome 報導</h4><p>並提及港媒將感染與 PHP2Shell 連結，群暉表示與 PHP 漏洞無關。</p></div>
+      <div class="tl-item alert"><div class="tl-date">2026/10/31</div><h4>出現較新版本受害案例</h4><p>有事件應變團隊回報一台執行 DSM 7.4.1 的設備也遭加密，無法排除新漏洞、套件、容器或憑證遭濫用的可能。</p></div>
+    </div>
+    <div>
+      <div class="card reveal" style="position:sticky; top:84px">
+        <h3>⏱ 關鍵觀察：不是「零時差」，而是「N 時差」</h3>
+        <p>勒索集團不一定需要最新的漏洞。對他們來說，<b>已公開、已修補、但大家沒更新</b>的漏洞才是成本最低的武器：</p>
+        <div class="grid g2" style="margin:14px 0">
+          <div class="stat red" style="padding:16px 10px"><div class="num" data-count="22" data-suffix="<small>個月</small>">0</div><div class="label">SA-24:20 修補後仍被利用</div><div class="src">依群暉說法推算</div></div>
+          <div class="stat red" style="padding:16px 10px"><div class="num" data-count="41" data-suffix="<small>天</small>">0</div><div class="label">SA-26:13 修補到 360 通報</div><div class="src">2026/9/18 → 10/29</div></div>
+        </div>
+        <p class="small muted">不論哪一種說法成立，受害設備都有一個共同點：<b>沒有在合理期限內套用已釋出的修補</b>。</p>
+        <p class="note warn small" style="margin:0">入侵途徑仍有爭議（見技術解析）。教學時可作為「原廠說法與第三方情資不一致時，企業如何決策」的討論素材。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 6. 技術解析 ================= -->
+<section class="block" id="tech" data-tip="四種說法放在一起看，你會發現：不管是哪一個，「更新」和「不對外曝露」都擋得住大部分情境。" data-tip-img="../../assets/img/characters/arale-holo.png">
+  <div class="sec-head reveal">
+    <div class="sec-num">06</div>
+    <div><h2>技術解析：C3RB3R 怎麼攻擊 NAS？</h2><p>攻擊鏈、入侵途徑爭議與勒索特徵（概念說明）</p></div>
+  </div>
+
+  <div class="attack reveal" data-attack>
+    <h3>🎬 攻擊流程動畫</h3>
+    <div class="attack-stage">
+      <div class="packet"></div>
+      <div class="node"><div class="ico">📡</div><b>掃描曝露設備</b><span>搜尋網路上可連線的 DSM 管理介面</span></div>
+      <div class="node danger"><div class="ico">🚪</div><b>利用未修補漏洞</b><span>免驗證、遠端執行程式碼</span></div>
+      <div class="node danger"><div class="ico">👤</div><b>取得系統控制</b><span>可能植入排程、帳號以維持存取</span></div>
+      <div class="node danger"><div class="ico">🔐</div><b>加密檔案</b><span>ChaCha8＋RSA-2048，副檔名 .L0CK3D</span></div>
+      <div class="node danger"><div class="ico">💰</div><b>勒索贖金</b><span>read-me3.txt 指向 Tor 網站</span></div>
+    </div>
+    <div class="attack-caption">按下「播放攻擊流程」，或用「下一步」逐步觀看。</div>
+    <div class="controls">
+      <button class="btn" data-act="play">▶ 播放攻擊流程</button>
+      <button class="btn ghost" data-act="prev">◀ 上一步</button>
+      <button class="btn ghost" data-act="next">下一步 ▶</button>
+      <button class="btn ghost" data-act="reset">↺ 重設</button>
+      <div class="step-dots"></div>
+    </div>
+    <script type="application/json">[
+      {"node":0,"title":"大規模掃描，誰沒關門就打誰","text":"攻擊者用自動化工具掃描網際網路，找出管理介面直接對外的群暉 NAS，並辨識 DSM 版本。這類攻擊通常不是針對特定公司，而是「亂槍打鳥」——只要你曝露在外、版本又舊，就會被選中。"},
+      {"node":1,"title":"利用已公開的漏洞入侵","text":"群暉指出攻擊利用 2024 年 12 月已修補的弱點（SA-24:20，其中 CVE-2024-10441 為 CVSS 9.8 的遠端程式碼執行）；360 則認為是 2026 年 9 月修補的 CVE-2026-13639／13684。兩者共同點：<b>不需要帳號密碼</b>。","evil":true},
+      {"node":2,"title":"取得控制權，站穩腳步","text":"攻擊者在 NAS 上取得執行權限。應變建議中提到要檢查<b>不明的排程工作、新增的管理員帳號</b>，以及套件與容器，代表攻擊者可能留下後門。","evil":true},
+      {"node":3,"title":"加密檔案","text":"依多家技術分析，C3RB3R 以 ChaCha8 搭配每檔獨立的 256 位元金鑰加密，金鑰再用 RSA-2048 包裝，檔案改為 <b>.L0CK3D</b>。照片、文件、程式碼，以及<b>放在同一台 NAS 上的備份檔</b>都會被加密。","evil":true},
+      {"node":4,"title":"留下勒索訊息","text":"每個資料夾出現 <b>read-me3.txt</b>，內含受害者 ID 與 Tor 網址。有報導指贖金約 0.037 BTC（約 2,952 美元）、五天後加倍（單一來源）。目前<b>沒有公開的免費解密工具</b>。","evil":true}
+    ]</script>
+  </div>
+
+  <div class="card reveal" style="margin-top:20px">
+    <h3>🧩 入侵途徑：四方說法並列</h3>
+    <div class="claims" style="margin-top:12px">
+      <div class="card claim vendor"><div class="who">🏢 群暉（原廠）</div><span class="what">SA-24:20｜2024/12 已修補</span><p>新聞稿指攻擊者利用 2024 年 12 月已修補的弱點，鎖定舊版 DSM。新聞稿未點名 CVE。</p></div>
+      <div class="card claim r360"><div class="who">🛡 360 反勒索團隊</div><span class="what">SA-26:13｜2026/9/18 修補</span><p>指入侵途徑為 CVE-2026-13639、CVE-2026-13684，屬於「1-day」攻擊。</p></div>
+      <div class="card claim ir"><div class="who">🚑 其他事件應變團隊</div><span class="what">DSM 7.4.1 亦有受害</span><p>無法排除新漏洞，或套件、容器、帳密遭濫用；有使用者懷疑與容器中的服務有關。</p></div>
+      <div class="card claim media"><div class="who">📰 港媒 HKEPC</div><span class="what">PHP2Shell？</span><p>將感染與 PHP2Shell 連結；依 iThome 報導，群暉向媒體表示與 PHP 漏洞無關。</p></div>
+    </div>
+    <p class="small muted" style="margin:14px 0 0">💡 顧問解讀：版本 7.4-90075／7.3.2-86009-4／7.2.2-72806-9／7.2.1-69057-12 以上<b>同時修補了 SA-24:20 與 SA-26:13</b>。也就是說，在歸因定案前，「更新到最新版」已能涵蓋前兩種說法；第三、四種說法則提醒我們還要檢查套件（含 PHP）、容器與帳號。注意：比對版本時要看完整的版本字串，例如 7.2.2-72806-<b>1</b> 只有 2024 年的修補，沒有 9 月的修補。</p>
+  </div>
+
+  <div class="grid g3" style="margin-top:20px">
+    <div class="card reveal">
+      <h3>🔎 受害特徵</h3>
+      <ul>
+        <li>檔案副檔名變成 <code>.L0CK3D</code></li>
+        <li>共用資料夾出現 <code>read-me3.txt</code></li>
+        <li>日誌中心出現不明來源登入、短時間大量檔案異動</li>
+        <li>工作排程器有不明腳本；出現不明管理員帳號</li>
+      </ul>
+    </div>
+    <div class="card reveal d1">
+      <h3>🩹 修補與強化</h3>
+      <ul>
+        <li>「控制台 › 更新與還原」更新 DSM，並<b>更新套件中心所有套件</b>，移除不用的套件</li>
+        <li>啟用自動更新</li>
+        <li>移除路由器對管理埠的轉發，改用 VPN</li>
+        <li>停用預設 admin、啟用雙重驗證、自動封鎖、防火牆白名單</li>
+      </ul>
+    </div>
+    <div class="card reveal d2">
+      <h3>🚑 如果已經中招</h3>
+      <ul>
+        <li>立即<b>中斷網路</b>，避免擴散到其他設備</li>
+        <li>保留勒索訊息、日誌與樣本檔案；<b>評估復原方案前先不要重灌</b></li>
+        <li>聯繫原廠技術支援，不要自行「清理」</li>
+        <li>從攻擊者碰不到的快照或異地備份還原</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 7. 攻防模擬 ================= -->
+<section class="block" id="sim" data-tip="來玩玩看！先什麼防護都不勾，按「發動攻擊」；再一項一項打開，看看哪些防護能擋住入侵、哪些能救回資料。" data-tip-img="../../assets/img/characters/arale-fight.png">
+  <div class="sec-head reveal">
+    <div class="sec-num">07</div>
+    <div><h2>互動模擬：你的 NAS 擋得住嗎？</h2><p>勾選防護措施、選擇攻擊途徑，按下「發動攻擊」</p></div>
+  </div>
+  <div class="ransim reveal" data-ransim>
+    <h3>🧪 勒索軟體攻防模擬器</h3>
+    <div class="ransim-grid">
+      <div>
+        <fieldset>
+          <legend>預防入侵</legend>
+          <label><input type="checkbox" data-def="patch"><span>DSM 與套件已更新到最新版<small>擋下利用「已公開漏洞」的攻擊</small></span></label>
+          <label><input type="checkbox" data-def="novpn"><span>管理介面不對外，只能透過 VPN<small>攻擊者根本找不到門</small></span></label>
+          <label><input type="checkbox" data-def="mfa"><span>雙重驗證＋停用預設 admin<small>擋下用帳密登入的攻擊</small></span></label>
+        </fieldset>
+        <fieldset>
+          <legend>確保復原</legend>
+          <label><input type="checkbox" data-def="snap"><span>受保護（不可變）的快照<small>在保留期間內無法被竄改或刪除</small></span></label>
+          <label><input type="checkbox" data-def="offsite"><span>異地／離線備份<small>不在同一台 NAS、不共用帳密</small></span></label>
+        </fieldset>
+        <fieldset>
+          <legend>攻擊途徑</legend>
+          <label><input type="radio" name="vector" value="vuln" checked><span>利用已公開的 DSM 漏洞</span></label>
+          <label><input type="radio" name="vector" value="cred"><span>使用外洩／暴力破解的帳密</span></label>
+          <label><input type="radio" name="vector" value="zero"><span>利用尚未公開的新漏洞</span></label>
+        </fieldset>
+      </div>
+      <div>
+        <div class="ransim-nas">
+          <div class="nas-head"><span>📦 DS-OFFICE ／ 共用資料夾：業務部</span><span class="leds"><i></i><i></i><i></i></span></div>
+          <div class="ransim-files"></div>
+        </div>
+        <div class="ransim-log">選好防護措施與攻擊途徑後，按下「發動攻擊」。</div>
+        <div class="controls">
+          <button class="btn" data-act="attack" style="background:var(--red-500); color:#fff">💣 發動攻擊</button>
+          <button class="btn ghost" data-act="reset">↺ 重設檔案</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card reveal" style="margin-top:20px; display:flex; gap:18px; align-items:center">
+    <img src="../../assets/img/characters/allan-think.png" alt="Allan Lo 顧問" style="width:96px; flex:none">
+    <p style="margin:0"><b>Allan 顧問觀點：</b>試完會發現，面對「尚未公開的新漏洞」，更新也擋不住，只有<b>不對外曝露</b>能預防；萬一還是被打進來，能救公司的只有<b>攻擊者碰不到的備份</b>。這就是縱深防禦：<b>預防層</b>（更新、不曝露、強驗證）負責降低機率，<b>復原層</b>（不可變快照、異地離線備份）負責降低衝擊，兩層缺一不可。</p>
+  </div>
+</section>
+
+<!-- ================= 8. 影響與數據 ================= -->
+<section class="block" id="impact" data-tip="這次沒有任何來源公布受害數量。沒有數字，不代表規模小喔！" data-tip-img="../../assets/img/characters/arale-think.png">
+  <div class="sec-head reveal">
+    <div class="sec-num">08</div>
+    <div><h2>影響與關鍵數據</h2><p>四個數字看懂本案風險</p></div>
+  </div>
+  <div class="grid g4">
+    <div class="card stat red reveal"><div class="num" data-count="9.8">0</div><div class="label">相關漏洞 CVSS 3.1</div><div class="src">CVE-2024-10441、CVE-2026-13639／13684</div></div>
+    <div class="card stat reveal d1"><div class="num" data-count="0" data-suffix="<small>個</small>">0</div><div class="label">公開的免費解密工具</div><div class="src">多家技術簡報（截至 10 月底）</div></div>
+    <div class="card stat teal reveal d2"><div class="num" data-count="2952" data-suffix="<small> USD</small>">0</div><div class="label">報導中的贖金金額</div><div class="src">約 0.037 BTC，5 天後加倍（單一來源）</div></div>
+    <div class="card stat reveal d3"><div class="num" data-count="8" data-suffix="<small>項</small>">0</div><div class="label">SA-26:13 修補的漏洞數</div><div class="src">其中 2 項為重大、免驗證</div></div>
+  </div>
+  <div class="card reveal" style="margin-top:20px">
+    <h3>📊 誰最容易受害？</h3>
+    <div class="table-scroll">
+      <table class="tbl">
+        <thead><tr><th>情境</th><th>風險</th><th>說明</th></tr></thead>
+        <tbody>
+          <tr><td>DSM 長期未更新＋管理介面對外開放</td><td><span class="chip bad">極高</span></td><td>本案主要受害族群，不需帳密即可入侵</td></tr>
+          <tr><td>DSM 已更新，但管理介面仍對外開放</td><td><span class="chip warn">中</span></td><td>可擋下已知漏洞，但面對新漏洞或帳密外洩仍有風險</td></tr>
+          <tr><td>僅透過 VPN 存取，DSM 定期更新</td><td><span class="chip ok">低</span></td><td>攻擊面大幅縮小</td></tr>
+          <tr><td>「備份」放在同一台 NAS 的另一個資料夾</td><td><span class="chip bad">無效</span></td><td>同機備份會一起被加密</td></tr>
+          <tr><td>有 RAID 但沒有其他備份</td><td><span class="chip bad">無效</span></td><td>RAID 只防硬碟故障，加密後的檔案也會同步到每顆硬碟</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="small muted" style="margin:12px 0 0">💡 截至報導時，沒有來源公布受害數量，韓國 KISA 等機構亦未說明規模。面對「沒有數字」的情資，企業應以<b>自身曝露狀況</b>評估風險，而不是等待統計數字。</p>
+  </div>
+</section>
+
+<!-- ================= 9. 重點整理 ================= -->
+<section class="block" id="keypoints" data-tip="八個重點，第 3 點和第 5 點請一定要轉告老闆！" data-tip-img="../../assets/img/characters/arale-thumb.png">
+  <div class="sec-head reveal">
+    <div class="sec-num">09</div>
+    <div><h2>個案重點整理</h2><p>八個帶得走的觀念</p></div>
+  </div>
+  <div class="keypoints">
+    <div class="card kp reveal"><h4>舊漏洞比新漏洞更危險</h4><p>勒索集團偏好「已公開、有 PoC、大家沒修」的漏洞。修補釋出的那一刻，倒數計時就開始了。</p></div>
+    <div class="card kp reveal d1"><h4>NAS 是伺服器，不是家電</h4><p>它應該在資產清冊、弱點掃描、修補管理與日誌監控的範圍內，並有明確負責人。</p></div>
+    <div class="card kp reveal"><h4>RAID 與同機備份都不是備份</h4><p>勒索軟體會連同機上的備份一起加密。備份必須在攻擊者碰不到的地方：不可變、異地、離線。</p></div>
+    <div class="card kp reveal d1"><h4>管理介面不要對網際網路開放</h4><p>遠端存取改走 VPN。不曝露，就能擋下包括新漏洞在內的大部分攻擊。</p></div>
+    <div class="card kp reveal"><h4>自動更新值得認真考慮</h4><p>對中小企業而言，「延遲更新」的風險往往大於「自動更新造成中斷」的風險。</p></div>
+    <div class="card kp reveal d1"><h4>歸因未定，行動不等</h4><p>原廠、資安業者、媒體說法不一時，先執行涵蓋所有說法的「無悔行動」：更新、收回曝露、檢查帳號與套件。</p></div>
+    <div class="card kp reveal"><h4>內建元件跟著原廠走</h4><p>NAS 內建的 PHP 等元件，使用者無法自行升級。供應商的修補速度與支援期，是採購時就該評估的條件。</p></div>
+    <div class="card kp reveal d1"><h4>中招後先保全再還原</h4><p>斷網、保留證據、評估資料外洩，再從乾淨備份還原。重灌前先想清楚，以免破壞鑑識與復原機會。</p></div>
+  </div>
+</section>
+
+<!-- ================= 10. 問題討論 ================= -->
+<section class="block" id="discussion" data-tip="先自己想一想，再點開 Allan 顧問的參考答案。答案沒有標準，重點是思考脈絡！" data-tip-img="../../assets/img/characters/arale-think.png">
+  <div class="sec-head reveal">
+    <div class="sec-num">10</div>
+    <div><h2>問題討論與顧問參考答案</h2><p>管理｜技術｜法律｜企業因應 四大面向</p></div>
+  </div>
+
+  <div class="tabs" role="tablist" aria-label="討論面向">
+    <button class="tab" role="tab" aria-selected="true" aria-controls="p-mgmt" id="t-mgmt">🧭 管理面 <span class="n">4</span></button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="p-tech" id="t-tech">🛠 技術面 <span class="n">4</span></button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="p-law" id="t-law">⚖️ 法律面 <span class="n">4</span></button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="p-biz" id="t-biz">🏢 企業因應 <span class="n">4</span></button>
+    <button class="btn dark" data-expand="#discussion" style="margin-left:auto">展開全部參考答案</button>
+  </div>
+
+  <!-- ===== 管理面 ===== -->
+  <div class="panel" id="p-mgmt" role="tabpanel" aria-labelledby="t-mgmt">
+    <div class="panel-intro"><img src="../../assets/img/characters/arale-explain.png" alt=""><p><b>阿拉蕾：</b>管理面要問：為什麼修補放了快兩年，還有那麼多設備沒更新？</p></div>
+
+    <details class="qa card">
+      <summary><span class="qid">M1</span><span class="qtext">原廠在 2024 年就釋出修補，為何 2026 年仍有大量 NAS 受害？NAS 為什麼特別容易成為「修補死角」？<small>關鍵字：資產擁有者、影子 IT、修補範圍</small></span><span class="toggle"><span class="t-open">顧問參考答案</span><span class="t-close">收合</span></span></summary>
+      <div class="answer">
+        <div class="who"><img src="../../assets/img/characters/allan-think.png" alt="">Allan Lo 顧問</div>
+        <div>
+          <h5>常見根因</h5>
+          <ul>
+            <li><b>沒有擁有者：</b>部門自購、廠商代裝，IT 不知道它存在，業務單位以為廠商會更新。</li>
+            <li><b>不在範圍內：</b>弱點掃描與修補流程只涵蓋伺服器與 PC，NAS、印表機、監視器主機被當成「設備」。</li>
+            <li><b>怕中斷：</b>更新需要重開機，全公司都在用，「能用就不要動」。</li>
+            <li><b>沒有通知管道：</b>原廠安全公告沒人訂閱，DSM 的更新提示只有管理員登入時才看得到。</li>
+          </ul>
+          <h5>建議作法</h5>
+          <ol>
+            <li>將 NAS 等網路設備納入資產清冊，記錄型號、韌體版本、用途、資料分級、<b>擁有者</b>與維護廠商。<span class="ctrl-ref">A.5.9</span></li>
+            <li>修補管理程序明確涵蓋「網路設備與嵌入式系統」，並訂定依嚴重度的修補期限。<span class="ctrl-ref">A.8.8</span></li>
+            <li>建立採購管控：任何連網設備上線前需經 IT／資安審核並登錄。<span class="ctrl-ref">A.5.10</span><span class="ctrl-ref">A.8.1</span></li>
+            <li>指定專人訂閱原廠安全公告與 CERT 通報。<span class="ctrl-ref">A.5.7</span></li>
+          </ol>
+          <div class="tip"><b>💡 稽核觀察：</b>驗證稽核時抽查資產清冊，最常漏掉的就是 NAS、無線 AP、監視器錄影主機與會議室設備。</div>
+        </div>
+      </div>
+    </details>
+
+    <details class="qa card">
+      <summary><span class="qid">M2</span><span class="qtext">原廠說是 2024 年的舊漏洞，資安業者說是 2026 年的新漏洞，還有人說是 PHP2Shell。情資互相矛盾時，資安主管該如何決策？<small>關鍵字：威脅情資評估、無悔行動、決策紀錄</small></span><span class="toggle"><span class="t-open">顧問參考答案</span><span class="t-close">收合</span></span></summary>
+      <div class="answer">
+        <div class="who"><img src="../../assets/img/characters/allan-point.png" alt="">Allan Lo 顧問</div>
+        <div>
+          <h5>原則：不要等歸因定案</h5>
+          <p>歸因可能要數週才會清楚，攻擊不會等你。決策應建立在「<b>哪些行動在所有假設下都有效</b>」。</p>
+          <div class="table-scroll"><table class="tbl">
+            <thead><tr><th>行動</th><th>舊漏洞說</th><th>新漏洞說</th><th>PHP2Shell 說</th><th>帳密／容器說</th></tr></thead>
+            <tbody>
+              <tr><td>更新 DSM 到最新版</td><td>✅</td><td>✅</td><td>⚪</td><td>⚪</td></tr>
+              <tr><td>更新所有套件（含 PHP）</td><td>⚪</td><td>⚪</td><td>✅</td><td>⚪</td></tr>
+              <tr><td>管理介面改為僅 VPN</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td></tr>
+              <tr><td>雙重驗證、檢查帳號與容器</td><td>⚪</td><td>⚪</td><td>⚪</td><td>✅</td></tr>
+              <tr><td>確認離線／不可變備份</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td></tr>
+            </tbody>
+          </table></div>
+          <h5>管理要點</h5>
+          <ul>
+            <li>對情資標註<b>可信度與來源</b>（原廠、政府 CERT、資安業者、媒體），但不因可信度不足就不行動。<span class="ctrl-ref">A.5.7</span></li>
+            <li>將評估與決策寫成紀錄，事後歸因明朗時再檢討調整。<span class="ctrl-ref">A.5.25</span></li>
+          </ul>
+          <div class="tip"><b>💡 顧問一句話：</b>「不知道是哪扇窗被打破」的時候，就把所有窗戶都關上，順便確認保險箱在別的地方。</div>
+        </div>
+      </div>
+    </details>
+
+    <details class="qa card">
+      <summary><span class="qid">M3</span><span class="qtext">群暉建議「啟用自動更新」，但 IT 擔心更新造成服務中斷或相容性問題。企業該如何在變更管理與及時修補間取得平衡？<small>關鍵字：變更管理、修補分級、風險接受</small></span><span class="toggle"><span class="t-open">顧問參考答案</span><span class="t-close">收合</span></span></summary>
+      <div class="answer">
+        <div class="who"><img src="../../assets/img/characters/allan-confused.png" alt="">Allan Lo 顧問</div>
+        <div>
+          <h5>比較兩種風險</h5>
+          <ul>
+            <li><b>自動更新的風險：</b>偶發的相容性問題、非預期重開機，通常可在數小時內排除。</li>
+            <li><b>延遲更新的風險：</b>本案顯示可能是全部資料被加密，影響數天至永久。</li>
+          </ul>
+          <h5>建議的分級政策</h5>
+          <div class="table-scroll"><table class="tbl">
+            <thead><tr><th>設備類型</th><th>建議作法</th></tr></thead>
+            <tbody>
+              <tr><td>中小企業、無專職 IT 的 NAS</td><td>啟用自動安全更新，排在非上班時段</td></tr>
+              <tr><td>有對外服務的設備</td><td>重大漏洞 72 小時內更新；無法更新先收回曝露</td></tr>
+              <tr><td>核心營運、需相容性測試者</td><td>預先核准的「標準變更」：安全更新 7 天內完成測試與套用</td></tr>
+              <tr><td>無法更新（EOL、客製）</td><td>列入風險登錄，正式風險接受、補償控制與汰換期限</td></tr>
+            </tbody>
+          </table></div>
+          <p style="margin-top:10px"><span class="ctrl-ref">A.8.8</span><span class="ctrl-ref">A.8.32</span><span class="ctrl-ref">A.8.19</span></p>
+          <div class="tip"><b>💡 小技巧：</b>將「原廠安全更新」定義為預先核准的<b>標準變更</b>，不必每次送變更審查會議，只需事後記錄，就能兼顧速度與管控。</div>
+        </div>
+      </div>
+    </details>
+
+    <details class="qa card">
+      <summary><span class="qid">M4</span><span class="qtext">NAS 上放了哪些資料？如果包含個資、財務資料、客戶合約，管理制度上該有什麼不同？<small>關鍵字：資訊分級、存放規範、PIMS</small></span><span class="toggle"><span class="t-open">顧問參考答案</span><span class="t-close">收合</span></span></summary>
+      <div class="answer">
+        <div class="who"><img src="../../assets/img/characters/allan-worried.png" alt="">Allan Lo 顧問</div>
+        <div>
+          <p>很多企業的 NAS 是「什麼都往裡丟」：員工個資、薪資表、客戶名單和行銷素材放在同一台設備、同一套權限下。</p>
+          <h5>建議</h5>
+          <ol>
+            <li>依資訊分級規範定義哪些等級的資料<b>可以</b>放在 NAS、需要哪些保護（加密、存取控制、備份頻率）。<span class="ctrl-ref">A.5.12</span><span class="ctrl-ref">A.5.13</span></li>
+            <li>個資盤點（PIMS）應將 NAS 列為個資存放位置，並對應處理目的與保存期限。（ISO/IEC 27701）</li>
+            <li>共用資料夾權限依「最小權限」設定，避免一個帳號就能讀寫全部資料。<span class="ctrl-ref">A.5.15</span><span class="ctrl-ref">A.8.3</span></li>
+            <li>過期資料定期刪除。<b>你沒有保存的資料，就不會被勒索。</b><span class="ctrl-ref">A.8.10</span></li>
+          </ol>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- ===== 技術面 ===== -->
+  <div class="panel" id="p-tech" role="tabpanel" aria-labelledby="t-tech" hidden>
+    <div class="panel-intro"><img src="../../assets/img/characters/arale-holo.png" alt=""><p><b>阿拉蕾：</b>技術面聚焦在：怎麼安全地從外面連、備份怎麼設計、怎麼發現、中招怎麼辦。</p></div>
+
+    <details class="qa card">
+      <summary><span class="qid">T1</span><span class="qtext">業務需要在外存取 NAS 檔案。請比較「埠轉發」、「VPN」與「原廠中繼服務」等遠端存取方式，並提出建議組態。<small>關鍵字：攻擊面、VPN、強驗證</small></span><span class="toggle"><span class="t-open">顧問參考答案</span><span class="t-close">收合</span></span></summary>
+      <div class="answer">
+        <div class="who"><img src="../../assets/img/characters/allan-point.png" alt="">Allan Lo 顧問</div>
+        <div>
+          <div class="table-scroll"><table class="tbl">
+            <thead><tr><th>方式</th><th>優點</th><th>風險</th><th>建議</th></tr></thead>
+            <tbody>
+              <tr><td>路由器埠轉發 DSM 管理埠</td><td>設定簡單</td><td>管理介面直接曝露，本案主要受害情境</td><td><span class="chip bad">避免</span></td></tr>
+              <tr><td>UPnP 自動開埠</td><td>免設定</td><td>可能在不知情下開放服務</td><td><span class="chip bad">關閉</span></td></tr>
+              <tr><td>原廠中繼／雲端連線服務</td><td>免開埠</td><td>仍可能曝露登入頁，需依服務設計評估</td><td><span class="chip warn">搭配強驗證</span></td></tr>
+              <tr><td>VPN（公司防火牆或 NAS 以外的設備）</td><td>管理介面不對外</td><td>VPN 本身也需修補與 MFA</td><td><span class="chip ok">建議</span></td></tr>
+              <tr><td>檔案分享改用雲端協作平台</td><td>NAS 完全不對外</td><td>需另行管理雲端權限</td><td><span class="chip ok">可考慮</span></td></tr>
+            </tbody>
+          </table></div>
+          <h5>NAS 基本強化組態</h5>
+          <ul>
+            <li>停用預設 admin、所有管理員帳號啟用雙重驗證。<span class="ctrl-ref">A.8.2</span><span class="ctrl-ref">A.8.5</span></li>
+            <li>啟用自動封鎖、防火牆僅允許內網／VPN 網段。<span class="ctrl-ref">A.8.20</span></li>
+            <li>移除不使用的套件與服務，縮小攻擊面。<span class="ctrl-ref">A.8.9</span></li>
+            <li>使用者帳號與管理員帳號分離。</li>
+          </ul>
+        </div>
+      </div>
+    </details>
+
+    <details class="qa card">
+      <summary><span class="qid">T2</span><span class="qtext">請為公司的 NAS 設計一套「勒索軟體打不壞」的備份架構，並說明如何驗證它真的有效。<small>關鍵字：3-2-1-1-0、不可變快照、還原測試</small></span><span class="toggle"><span class="t-open">顧問參考答案</span><span class="t-close">收合</span></span></summary>
+      <div class="answer">
+        <div class="who"><img src="../../assets/img/characters/allan-laugh.png" alt="">Allan Lo 顧問</div>
+        <div>
+          <h5>3-2-1-1-0 原則</h5>
+          <ul>
+            <li><b>3</b> 份資料：正本＋兩份備份</li>
+            <li><b>2</b> 種不同儲存媒介</li>
+            <li><b>1</b> 份在異地</li>
+            <li><b>1</b> 份離線或不可變（攻擊者拿到管理權限也刪不掉、改不了）</li>
+            <li><b>0</b> 錯誤：定期還原測試，確認備份可用</li>
+          </ul>
+          <h5>落實到 NAS</h5>
+          <ol>
+            <li>共用資料夾啟用排程快照，並開啟<b>不可變／防竄改保護</b>，保留期限至少涵蓋「發現入侵前的潛伏期」。</li>
+            <li>以備份工具將資料複製到<b>另一台設備或雲端</b>，且備份目的地<b>使用不同的帳密</b>，不能從被攻陷的 NAS 直接刪除。</li>
+            <li>重要資料定期產生離線副本（如輪替的外接硬碟、磁帶）。</li>
+            <li>監控備份任務是否真的成功，<b>失敗要有人收到通知</b>。</li>
+            <li>每季抽樣還原測試，記錄還原時間，驗證是否符合 RTO／RPO。</li>
+          </ol>
+          <p><span class="ctrl-ref">A.8.13</span><span class="ctrl-ref">A.5.30</span></p>
+          <div class="tip"><b>💡 顧問經驗：</b>輔導現場最常見的狀況是「備份任務三個月前就失敗了，但沒人知道」。沒有測試過的備份，只能算是「希望」。</div>
+        </div>
+      </div>
+    </details>
+
+    <details class="qa card">
+      <summary><span class="qid">T3</span><span class="qtext">如何及早發現 NAS 正在被入侵或加密？要收哪些日誌、設哪些告警？<small>關鍵字：日誌集中、異常偵測、誘餌檔</small></span><span class="toggle"><span class="t-open">顧問參考答案</span><span class="t-close">收合</span></span></summary>
+      <div class="answer">
+        <div class="who"><img src="../../assets/img/characters/allan-think.png" alt="">Allan Lo 顧問</div>
+        <div>
+          <h5>可觀察的訊號</h5>
+          <ul>
+            <li>不明來源 IP 登入、非上班時間的管理員登入、登入失敗暴增</li>
+            <li>短時間大量檔案異動或更名（如出現 <code>.L0CK3D</code>）、出現 <code>read-me3.txt</code></li>
+            <li>CPU／磁碟 I/O 異常飆高</li>
+            <li>新增管理員帳號、不明排程工作、新安裝的套件或容器</li>
+            <li>快照或備份任務被修改、停用或失敗</li>
+          </ul>
+          <h5>建議作法</h5>
+          <ol>
+            <li>啟用 NAS 日誌並以 syslog 送到<b>另一台</b>日誌伺服器或 SIEM，避免被攻擊者清除。<span class="ctrl-ref">A.8.15</span></li>
+            <li>設定登入異常、帳號異動、備份失敗的即時通知（Email／通訊軟體）。<span class="ctrl-ref">A.8.16</span></li>
+            <li>在共用資料夾放置<b>誘餌檔</b>（canary file），被修改即告警。</li>
+            <li>定期執行原廠的安全檢查工具（如安全顧問），檢視設定弱點。</li>
+          </ol>
+        </div>
+      </div>
+    </details>
+
+    <details class="qa card">
+      <summary><span class="qid">T4</span><span class="qtext">週一早上同仁回報檔案都打不開、副檔名變成 .L0CK3D。請列出 IT 人員前 2 小時該做與不該做的事。<small>關鍵字：初期應變、證據保全、隔離</small></span><span class="toggle"><span class="t-open">顧問參考答案</span><span class="t-close">收合</span></span></summary>
+      <div class="answer">
+        <div class="who"><img src="../../assets/img/characters/allan-surprised.png" alt="">Allan Lo 顧問</div>
+        <div>
+          <div class="grid g2">
+            <div>
+              <h5>✅ 該做</h5>
+              <ol>
+                <li><b>隔離：</b>拔網路線或在交換器上隔離 NAS；檢查連到 NAS 的 PC 是否也有異常。</li>
+                <li><b>通報：</b>啟動事件應變程序，通知資安窗口與主管。<span class="ctrl-ref">A.5.25</span></li>
+                <li><b>保全證據：</b>拍下勒索訊息、匯出日誌、保留樣本加密檔。<span class="ctrl-ref">A.5.28</span></li>
+                <li><b>盤點備份：</b>確認異地／離線備份與快照是否完好、最後一次正常時間點。</li>
+                <li><b>聯繫支援：</b>原廠技術支援、TWCERT/CC、資安廠商或保險公司指定的事件應變團隊。</li>
+              </ol>
+            </div>
+            <div>
+              <h5>❌ 不該做</h5>
+              <ol>
+                <li>未評估前就<b>重灌或初始化</b>：可能破壞鑑識證據與復原機會。</li>
+                <li>把備份硬碟<b>直接接上</b>受感染的 NAS 或網路。</li>
+                <li>自行下載來路不明的「解密工具」。</li>
+                <li>直接聯繫攻擊者或付款（需由管理階層依程序決策）。</li>
+                <li>在查明入侵途徑前，就把還原後的系統重新接回網路。</li>
+              </ol>
+            </div>
+          </div>
+          <div class="tip"><b>💡 提醒：</b>還原前必須先修補入侵途徑（更新 DSM、收回曝露、更換所有帳密），否則很可能在數天內被再次加密。<span class="ctrl-ref">A.5.26</span></div>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- ===== 法律面 ===== -->
+  <div class="panel" id="p-law" role="tabpanel" aria-labelledby="t-law" hidden>
+    <div class="panel-intro"><img src="../../assets/img/characters/arale-confused.png" alt=""><p><b>阿拉蕾：</b>檔案「只是被加密」，沒有被偷走，這樣也要通報嗎？<br><span class="small muted">（以下為一般性說明，不構成法律意見；個案請洽專業律師。）</span></p></div>
+
+    <details class="qa card">
+      <summary><span class="qid">L1</span><span class="qtext">NAS 上的員工與客戶個資被加密，但「目前沒有證據顯示被竊取」。這算個資事件嗎？需要通知當事人或主管機關嗎？<small>關鍵字：個資法第 12 條、可用性侵害、雙重勒索</small></span><span class="toggle"><span class="t-open">顧問參考答案</span><span class="t-close">收合</span></span></summary>
+      <div class="answer">
+        <div class="who"><img src="../../assets/img/characters/allan-point.png" alt="">Allan Lo 顧問</div>
+        <div>
+          <h5>不要太快下「沒有外洩」的結論</h5>
+          <ul>
+            <li>攻擊者已取得系統控制權，<b>技術上就有能力讀取並帶走資料</b>。許多勒索集團採「雙重勒索」：先竊取、再加密。</li>
+            <li>「沒有證據」常常是因為<b>沒有足夠的日誌</b>可以證明，而不是真的沒有外洩。</li>
+          </ul>
+          <h5>法規面</h5>
+          <ul>
+            <li><b>個資法第 12 條：</b>個資被竊取、洩漏、竄改或<b>其他侵害</b>者，應查明後以適當方式通知當事人。加密致無法使用、且無法排除被存取，宜審慎評估。</li>
+            <li><b>各目的事業主管機關的個資安全維護辦法：</b>部分產業要求於知悉重大個資事故後一定時限內通報主管機關。</li>
+            <li><b>GDPR：</b>歐盟監管機關的指引已將勒索加密視為個資事故（可用性侵害）；若涉及歐盟個資，需評估 72 小時內通報。</li>
+          </ul>
+          <h5>建議</h5>
+          <ol>
+            <li>由鑑識結果判斷是否有資料外送（防火牆流量、NAS 日誌）。</li>
+            <li>無法排除時，依保守原則處理通報與通知，並留存評估紀錄。<span class="ctrl-ref">A.5.34</span><span class="ctrl-ref">A.5.31</span></li>
+          </ol>
+        </div>
+      </div>
+    </details>
+
+    <details class="qa card">
+      <summary><span class="qid">L2</span><span class="qtext">老闆問：「備份沒了，贖金不到 3,000 美元，付了就好？」付贖金有哪些法律與治理風險？<small>關鍵字：付款風險、制裁、董事責任</small></span><span class="toggle"><span class="t-open">顧問參考答案</span><span class="t-close">收合</span></span></summary>
+      <div class="answer">
+        <div class="who"><img src="../../assets/img/characters/allan-worried.png" alt="">Allan Lo 顧問</div>
+        <div>
+          <h5>需要考量的風險</h5>
+          <ul>
+            <li><b>不保證解密：</b>對方可能不給金鑰、金鑰無效，或拿錢後再加價。</li>
+            <li><b>不保證刪除資料：</b>若資料已被竊取，付款也無法確保不被公開或轉賣。</li>
+            <li><b>成為回頭客：</b>付過錢的組織常被標記為「願意付款」的目標。</li>
+            <li><b>制裁與洗錢風險：</b>若收款方屬於受制裁對象，可能違反相關法令（例如美國財政部 OFAC 已發布勒索軟體付款的制裁風險提醒；國內亦有資恐防制相關規範）。</li>
+            <li><b>公司治理：</b>付款屬重大決策，需由經營階層依程序決議並留下紀錄，必要時諮詢律師、保險公司與執法機關。</li>
+          </ul>
+          <h5>顧問立場</h5>
+          <p>本站不建議付款。更重要的是：<b>當「付不付贖金」成為選項時，代表備份與營運持續的管理已經失效</b>。這筆錢應該在事前花在備份上。</p>
+          <div class="tip"><b>💡 事前準備：</b>在事件應變程序中預先寫好「贖金決策原則」與決策層級，避免在壓力下倉促決定。</div>
+        </div>
+      </div>
+    </details>
+
+    <details class="qa card">
+      <summary><span class="qid">L3</span><span class="qtext">原廠已釋出修補，是使用者沒更新。那麼原廠有沒有責任？從法規趨勢來看，未來的責任分配會有什麼變化？<small>關鍵字：產品安全、預設安全、歐盟網路韌性法（CRA）</small></span><span class="toggle"><span class="t-open">顧問參考答案</span><span class="t-close">收合</span></span></summary>
+      <div class="answer">
+        <div class="who"><img src="../../assets/img/characters/allan-think.png" alt="">Allan Lo 顧問</div>
+        <div>
+          <h5>現況</h5>
+          <p>原廠已在合理期間內修補並公告，使用者長期未更新，責任多半落在使用者端。但若產品<b>預設組態不安全</b>、更新機制難用或支援期過短，原廠也可能面臨質疑。</p>
+          <h5>法規趨勢：「預設安全」與「自動更新」</h5>
+          <ul>
+            <li><b>歐盟網路韌性法（CRA）</b>要求含數位元素的產品在支援期間提供安全更新，並在適用時<b>預設啟用自動安全更新</b>、提供清楚的退出機制。</li>
+            <li>CRA 的通報義務自 2026 年 9 月 11 日起適用：製造商得知產品漏洞<b>正遭積極利用</b>時，需在 24 小時內提出早期預警。本案這類情境正是規範對象。</li>
+            <li>美國 CISA 推動的「Secure by Design」也鼓勵廠商承擔更多安全責任，例如淘汰預設密碼、預設啟用 MFA。</li>
+          </ul>
+          <h5>對企業的意義</h5>
+          <ul>
+            <li>採購時把<b>支援期限、安全更新機制、漏洞通報管道</b>列為評選條件。<span class="ctrl-ref">A.5.19</span><span class="ctrl-ref">A.5.21</span></li>
+            <li>台灣出口歐盟的製造商，也要準備 CRA 的合規要求。</li>
+          </ul>
+        </div>
+      </div>
+    </details>
+
+    <details class="qa card">
+      <summary><span class="qid">L4</span><span class="qtext">員工為了方便在家工作，把公司檔案同步到自己家裡的 NAS，結果那台 NAS 被勒索、資料外流。公司與員工的責任如何劃分？<small>關鍵字：遠距工作、BYOD、資料外流</small></span><span class="toggle"><span class="t-open">顧問參考答案</span><span class="t-close">收合</span></span></summary>
+      <div class="answer">
+        <div class="who"><img src="../../assets/img/characters/allan-confused.png" alt="">Allan Lo 顧問</div>
+        <div>
+          <h5>對外：公司仍須負責</h5>
+          <p>對當事人與主管機關而言，公司是個資的蒐集者與保有者，不能以「是員工私自做的」完全免責；能否證明已善盡管理監督（政策、教育訓練、技術管控），會影響責任輕重。</p>
+          <h5>對內：依規章與契約</h5>
+          <ul>
+            <li>若公司有明確政策禁止、並已告知與教育，員工違反時可依工作規則懲處，並視情節求償。</li>
+            <li>若公司沒有規範、甚至默許，則難以歸責員工。</li>
+          </ul>
+          <h5>建議控制措施</h5>
+          <ol>
+            <li>遠距工作政策明定公司資料<b>只能存放在核准的位置</b>。<span class="ctrl-ref">A.6.7</span><span class="ctrl-ref">A.5.10</span></li>
+            <li>提供好用的合規替代方案（公司雲端、VPN），員工才不會自己找方法。</li>
+            <li>以 DLP、雲端存取控管限制資料同步到未核准設備。<span class="ctrl-ref">A.8.12</span></li>
+            <li>保密協議與教育訓練中說明個人責任。<span class="ctrl-ref">A.6.3</span><span class="ctrl-ref">A.6.6</span></li>
+          </ol>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- ===== 企業因應 ===== -->
+  <div class="panel" id="p-biz" role="tabpanel" aria-labelledby="t-biz" hidden>
+    <div class="panel-intro"><img src="../../assets/img/characters/arale-fight.png" alt=""><p><b>阿拉蕾：</b>企業因應要回答：如果明天輪到我們，業務能撐多久？</p></div>
+
+    <details class="qa card">
+      <summary><span class="qid">E1</span><span class="qtext">公司的報價單、合約、設計圖都在 NAS 上。若 NAS 被加密，業務可以停擺多久？請說明如何設定 RTO／RPO 並納入營運持續計畫。<small>關鍵字：BIA、RTO、RPO、BCP</small></span><span class="toggle"><span class="t-open">顧問參考答案</span><span class="t-close">收合</span></span></summary>
+      <div class="answer">
+        <div class="who"><img src="../../assets/img/characters/allan-point.png" alt="">Allan Lo 顧問</div>
+        <div>
+          <h5>從業務問起，而不是從技術</h5>
+          <ul>
+            <li><b>RTO（復原時間目標）：</b>業務部說「兩天沒有報價單，客戶就流失」→ RTO ≤ 48 小時。</li>
+            <li><b>RPO（復原點目標）：</b>「最多只能接受重做半天的工作」→ RPO ≤ 12 小時，快照與備份頻率要跟著調整。</li>
+          </ul>
+          <h5>常見落差</h5>
+          <div class="table-scroll"><table class="tbl">
+            <thead><tr><th>項目</th><th>業務期待</th><th>現況常見情形</th></tr></thead>
+            <tbody>
+              <tr><td>RPO</td><td>12 小時</td><td>每週備份一次 → 最多遺失 7 天</td></tr>
+              <tr><td>RTO</td><td>48 小時</td><td>10TB 從雲端下載還原需 3～5 天，且無備用設備</td></tr>
+            </tbody>
+          </table></div>
+          <h5>建議</h5>
+          <ol>
+            <li>透過營運衝擊分析（BIA）定義 NAS 上各類資料的 RTO／RPO。<span class="ctrl-ref">A.5.30</span></li>
+            <li>依此設計快照頻率、備份頻率、還原方式（是否需要備用 NAS）。<span class="ctrl-ref">A.8.13</span><span class="ctrl-ref">A.8.14</span></li>
+            <li>準備「NAS 不可用」時的替代作業方式（例如暫用雲端空間、紙本流程）。<span class="ctrl-ref">A.5.29</span></li>
+            <li>每年至少一次實際還原演練，量測真實 RTO。</li>
+          </ol>
+        </div>
+      </div>
+    </details>
+
+    <details class="qa card">
+      <summary><span class="qid">E2</span><span class="qtext">個案 #001 PHP2Shell 期間，部分 NAS 廠商遲遲沒有修補，只能建議「先移出網路」。對於依賴原廠修補的設備，企業應如何管理這種「修補缺口」？<small>關鍵字：供應商管理、嵌入式元件、採購評估</small></span><span class="toggle"><span class="t-open">顧問參考答案</span><span class="t-close">收合</span></span></summary>
+      <div class="answer">
+        <div class="who"><img src="../../assets/img/characters/allan-think.png" alt="">Allan Lo 顧問</div>
+        <div>
+          <h5>問題本質</h5>
+          <p>NAS、防火牆、印表機內建的 PHP、OpenSSL、Linux 核心等元件，使用者無法自行升級。<b>上游已修補 ≠ 你的設備已修補</b>，中間的時間差就是風險窗口。</p>
+          <h5>管理作法</h5>
+          <ol>
+            <li><b>採購前：</b>評估廠商的漏洞回應紀錄、平均修補時間、支援年限，並要求提供 SBOM。<span class="ctrl-ref">A.5.19</span><span class="ctrl-ref">A.5.21</span></li>
+            <li><b>合約中：</b>約定重大漏洞的修補或緩解時限與通知義務。<span class="ctrl-ref">A.5.20</span></li>
+            <li><b>運作中：</b>上游重大漏洞公告時，主動清查哪些設備內含該元件，追蹤各廠商修補狀態。<span class="ctrl-ref">A.5.22</span></li>
+            <li><b>缺口期間：</b>預先規劃補償控制（移出網路、限制來源、停用相關功能）。</li>
+          </ol>
+          <div class="tip"><b>💡 連結個案 #001：</b>PHP2Shell 公開後，群暉透過套件中心更新 PHP 套件，威聯通公告一度尚無修補版本並建議先移出網路。同一個上游漏洞，不同廠商的回應速度差異，就是企業的風險差異。</div>
+        </div>
+      </div>
+    </details>
+
+    <details class="qa card">
+      <summary><span class="qid">E3</span><span class="qtext">董事會或總經理看到這則新聞，應該問 IT／資安團隊哪五個問題？<small>關鍵字：資安治理、高階監督</small></span><span class="toggle"><span class="t-open">顧問參考答案</span><span class="t-close">收合</span></span></summary>
+      <div class="answer">
+        <div class="who"><img src="../../assets/img/characters/allan-laugh.png" alt="">Allan Lo 顧問</div>
+        <div>
+          <ol>
+            <li><b>我們有幾台 NAS？誰負責？版本是不是最新？</b>——檢驗資產與修補管理。</li>
+            <li><b>有沒有任何一台可以從網際網路直接連到管理畫面？</b>——檢驗曝露管理。</li>
+            <li><b>如果全部被加密，我們從哪裡還原？上次還原測試是什麼時候、花了多久？</b>——檢驗備份與營運持續。</li>
+            <li><b>NAS 上有沒有個資？被加密時我們要通報誰？</b>——檢驗法遵準備。</li>
+            <li><b>我們的贖金決策原則是什麼？誰有權決定？</b>——檢驗事件應變與治理。</li>
+          </ol>
+          <div class="tip"><b>💡 給高階的提醒：</b>第 3 題如果答不出「上次還原測試的日期」，請把它列為下次管理審查的追蹤事項。</div>
+        </div>
+      </div>
+    </details>
+
+    <details class="qa card">
+      <summary><span class="qid">E4</span><span class="qtext">中小企業沒有 IT 部門，NAS 是經銷商幫忙裝的。請列出「老闆自己就能做」的 NAS 安全五件事。<small>關鍵字：中小企業、最低基準、外部資源</small></span><span class="toggle"><span class="t-open">顧問參考答案</span><span class="t-close">收合</span></span></summary>
+      <div class="answer">
+        <div class="who"><img src="../../assets/img/characters/allan-wink.png" alt="">Allan Lo 顧問</div>
+        <div>
+          <ol>
+            <li><b>打開自動更新：</b>今天就請經銷商確認 DSM 版本並開啟自動更新。</li>
+            <li><b>問一句「外面連得到嗎？」</b>：請經銷商關閉路由器上對 NAS 管理埠的轉發，遠端需求改用 VPN。</li>
+            <li><b>換掉 admin：</b>停用預設帳號、每人一個帳號、管理員開啟雙重驗證。</li>
+            <li><b>買一顆外接硬碟或雲端備份：</b>每週備份一次，備份完就拔下來（或使用有版本保護的雲端備份）。</li>
+            <li><b>寫下求救電話：</b>經銷商、原廠客服、TWCERT/CC 的聯絡方式，貼在 NAS 旁邊。</li>
+          </ol>
+          <div class="tip"><b>💡 顧問一句話：</b>這五件事的成本加起來，大概不到一次贖金的十分之一。</div>
+        </div>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ================= 11. 稽核視角 ================= -->
+<section class="block" id="audit" data-tip="Allan 顧問的稽核筆記：這次的重點是 A.8.8 和 A.8.13！" data-tip-img="../../assets/img/characters/arale-thumb.png">
+  <div class="sec-head reveal">
+    <div class="sec-num">11</div>
+    <div><h2>稽核員視角：ISO/IEC 27001:2022 控制措施對照</h2><p>如果明天來驗證稽核，針對本案情境會看哪些證據？</p></div>
+  </div>
+  <div class="card reveal">
+    <div class="table-scroll">
+      <table class="tbl">
+        <thead><tr><th style="width:120px">控制措施</th><th>與本案的關聯</th><th>稽核時會請你提出的證據</th></tr></thead>
+        <tbody>
+          <tr><td><span class="ctrl-ref">A.5.9</span><br>資產清冊</td><td>NAS 是否被登錄並有擁有者</td><td>資產清冊（含型號、韌體版本、用途、資料分級、擁有者）</td></tr>
+          <tr><td><span class="ctrl-ref">A.5.12–5.13</span><br>資訊分級</td><td>NAS 上存放哪些等級資料</td><td>分級規範、NAS 共用資料夾與分級對照</td></tr>
+          <tr><td><span class="ctrl-ref">A.5.15／A.8.2</span><br>存取控制</td><td>預設 admin、管理員權限</td><td>帳號清單、權限審查紀錄、MFA 啟用畫面</td></tr>
+          <tr><td><span class="ctrl-ref">A.5.30</span><br>營運持續 ICT 準備</td><td>NAS 失效時的 RTO／RPO</td><td>BIA、BCP、還原演練紀錄與實測時間</td></tr>
+          <tr><td><span class="ctrl-ref">A.8.8</span><br>技術脆弱性管理</td><td>DSM 是否及時更新</td><td>修補程序（含網路設備）、更新紀錄、版本截圖、修補 SLA 達成率</td></tr>
+          <tr><td><span class="ctrl-ref">A.8.9</span><br>組態管理</td><td>不必要的套件、服務、埠</td><td>NAS 安全組態基準、定期檢查紀錄</td></tr>
+          <tr><td><span class="ctrl-ref">A.8.13</span><br>資訊備份</td><td>備份是否與 NAS 隔離、是否可還原</td><td>備份政策、備份任務成功紀錄、異地／離線備份證明、還原測試報告</td></tr>
+          <tr><td><span class="ctrl-ref">A.8.15–8.16</span><br>日誌與監控</td><td>能否發現入侵與加密</td><td>日誌外送設定、告警規則、告警處理紀錄</td></tr>
+          <tr><td><span class="ctrl-ref">A.8.20</span><br>網路安全</td><td>管理介面是否對外</td><td>防火牆／路由器規則、對外服務清單、外部掃描結果</td></tr>
+          <tr><td><span class="ctrl-ref">A.5.24–5.28</span><br>事件管理</td><td>勒索事件應變與證據保全</td><td>勒索軟體應變劇本、事件紀錄、證據保全程序、事後檢討</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note small" style="margin:14px 0 0">📝 若組織同時建置 ISO/IEC 27701（PIMS），請確認個資盤點已將 NAS 列為存放位置，並檢視個資事件的通知程序是否涵蓋「加密致無法使用」的情境。</p>
+  </div>
+</section>
+
+<!-- ================= 12. 行動清單 ================= -->
+<section class="block" id="checklist" data-tip="勾選完成項目，進度會自動儲存在你的瀏覽器裡！" data-tip-img="../../assets/img/characters/arale-fight.png">
+  <div class="sec-head reveal">
+    <div class="sec-num">12</div>
+    <div><h2>企業自我檢核：行動清單</h2><p>看完個案，立刻動手（進度儲存在本機瀏覽器）</p></div>
+  </div>
+  <div class="card reveal">
+    <div style="display:flex; justify-content:space-between; align-items:center"><b>完成度</b><span id="ck-label" class="muted small">0 / 0</span></div>
+    <div class="meter" id="ck-meter"><i></i></div>
+    <ul class="checklist" data-checklist="synology-c3rb3r" data-meter="#ck-meter" data-meter-label="#ck-label">
+      <li><input type="checkbox" id="c1"><label for="c1"><span class="when">立即</span>列出公司所有 NAS（含部門自購、分公司、經銷商代裝）及負責人</label></li>
+      <li><input type="checkbox" id="c2"><label for="c2"><span class="when">立即</span>DSM 已更新至 7.4-90075／7.3.2-86009-4／7.2.2-72806-9／7.2.1-69057-12 以上（核對完整版本字串）</label></li>
+      <li><input type="checkbox" id="c3"><label for="c3"><span class="when">立即</span>套件中心所有套件（含 PHP）已更新，不用的套件已移除</label></li>
+      <li><input type="checkbox" id="c4"><label for="c4"><span class="when">立即</span>確認路由器沒有對 NAS 管理埠的轉發，UPnP 已關閉</label></li>
+      <li><input type="checkbox" id="c5"><label for="c5"><span class="when">立即</span>搜尋共用資料夾是否有 .L0CK3D 檔案或 read-me3.txt</label></li>
+      <li><input type="checkbox" id="c6"><label for="c6"><span class="when w2">一週內</span>停用預設 admin，管理員帳號全部啟用雙重驗證</label></li>
+      <li><input type="checkbox" id="c7"><label for="c7"><span class="when w2">一週內</span>檢查不明管理員帳號、排程工作、套件與容器</label></li>
+      <li><input type="checkbox" id="c8"><label for="c8"><span class="when w2">一週內</span>啟用自動更新、自動封鎖與防火牆白名單</label></li>
+      <li><input type="checkbox" id="c9"><label for="c9"><span class="when w2">一週內</span>確認至少一份備份在 NAS 以外、帳密分離，並完成一次還原測試</label></li>
+      <li><input type="checkbox" id="c10"><label for="c10"><span class="when w3">一個月內</span>共用資料夾啟用受保護（不可變）快照，保留期限涵蓋潛伏期</label></li>
+      <li><input type="checkbox" id="c11"><label for="c11"><span class="when w3">一個月內</span>NAS 日誌外送並設定登入異常、備份失敗告警</label></li>
+      <li><input type="checkbox" id="c12"><label for="c12"><span class="when w3">一個月內</span>完成 NAS 資料的 BIA（RTO／RPO），並納入勒索軟體桌上演練</label></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= 13. 資料來源 ================= -->
+<section class="block" id="refs">
+  <div class="sec-head reveal">
+    <div class="sec-num">13</div>
+    <div><h2>資料來源與注意事項</h2><p>完整連結請見「相關新聞、公告與連結」章節</p></div>
+  </div>
+  <div class="grid g2">
+    <div class="card reveal">
+      <h3>📰 主要來源</h3>
+      <ul class="sources">
+        <li><a href="https://www.ithome.com.tw/news/180115" target="_blank" rel="noopener">iThome：群暉 NAS 遭 C3RB3R 勒索軟體攻擊，原廠呼籲用戶盡速更新 DSM 系統（2026-10-30）</a></li>
+        <li><a href="https://www.synology.com/zh-tw/company/news/article/C3RB3R" target="_blank" rel="noopener">群暉官方新聞稿（2026-10-29）</a></li>
+        <li><a href="https://www.synology.com/zh-tw/security/advisory/Synology_SA_24_20" target="_blank" rel="noopener">Synology-SA-24:20</a>、<a href="https://www.synology.com/zh-tw/security/advisory/Synology_SA_26_13" target="_blank" rel="noopener">Synology-SA-26:13</a></li>
+        <li><a href="https://www.trebsec.com/briefs/2026-10-29-synology-c3rb3r-ransomware.html" target="_blank" rel="noopener">TrebSec</a>、<a href="https://pwn.watch/i/synology-dsm-cerber-c3rb3r-ransomware-cve-2026-13639-13684" target="_blank" rel="noopener">pwn.watch</a>、<a href="https://www.it-connect.tech/c3rb3r-ransomware-is-hitting-synology-nas-devices-how-to-protect-yours/" target="_blank" rel="noopener">IT-Connect</a>、<a href="https://cyberexperts.com/2026-10-30-synology-dsm-c3rb3r-ransomware/" target="_blank" rel="noopener">CyberExperts</a>、<a href="https://techaeris.com/2026/10/31/synology-nas-ransomware-alert-c3rb3r/" target="_blank" rel="noopener">Techaeris</a></li>
+      </ul>
+    </div>
+    <div class="card reveal d1">
+      <h3>⚠️ 資料差異說明</h3>
+      <ul class="sources">
+        <li><b>入侵途徑：</b>群暉新聞稿指 2024 年 12 月已修補弱點（連結 SA-24:20），未點名 CVE；360 指 CVE-2026-13639／13684；另有 DSM 7.4.1 受害案例，途徑未明。</li>
+        <li><b>與 PHP2Shell 的關係：</b>港媒提出關聯；「群暉表示與 PHP 漏洞無關」見於 iThome 等媒體報導，官方新聞稿本身未提及 PHP。</li>
+        <li><b>贖金金額與加倍機制：</b>僅單一來源（Techaeris）。</li>
+        <li><b>受害數量：</b>截至 10 月底，無任何來源公布。</li>
+        <li><b>副檔名：</b>多數來源寫作 .L0CK3D（數字 0），少數寫作 .LOCK3D。</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site">
+  <div class="container">
+    <div class="cast">
+      <img src="../../assets/img/characters/allan-smile.png" alt="Allan Lo">
+      <img src="../../assets/img/characters/arale-laugh.png" alt="阿拉蕾">
+    </div>
+    <div>從新聞，看個案｜新聞導讀：Allan Lo 顧問 × AI 小助手阿拉蕾<br><span class="small">本站內容為教育訓練用途之個案整理，不構成法律或專業顧問意見。</span></div>
+    <div><a href="../2026-10-php2shell/index.html">← 個案 #001</a>　｜　<a href="../../index.html">回個案總覽</a></div>
+  </div>
+</footer>
+
+<div class="helper">
+  <div class="tipbox"><button class="close" aria-label="關閉提示">✕</button><span></span></div>
+  <img src="../../assets/img/characters/arale-wave.png" alt="AI 小助手阿拉蕾（點我顯示提示）">
+</div>
+
+<script src="../../assets/js/main.js"></script>
+</body>
+</html>

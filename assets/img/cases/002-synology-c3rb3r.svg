@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0b1530"/><stop offset="1" stop-color="#3a1630"/></linearGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#bg)"/>
+  <g opacity=".08" stroke="#fff"><path d="M0 40H640M0 80H640M0 120H640M0 160H640M0 200H640M0 240H640M0 280H640M0 320H640"/></g>
+  <!-- NAS -->
+  <rect x="80" y="90" width="180" height="200" rx="16" fill="#1d2f63" stroke="#3fd6e0" stroke-width="3"/>
+  <rect x="100" y="115" width="140" height="30" rx="6" fill="#13214a"/><rect x="100" y="155" width="140" height="30" rx="6" fill="#13214a"/>
+  <rect x="100" y="195" width="140" height="30" rx="6" fill="#13214a"/><rect x="100" y="235" width="140" height="30" rx="6" fill="#13214a"/>
+  <g fill="#e5484d"><circle cx="225" cy="130" r="5"/><circle cx="225" cy="170" r="5"/><circle cx="225" cy="210" r="5"/><circle cx="225" cy="250" r="5"/></g>
+  <!-- lock -->
+  <rect x="190" y="200" width="90" height="74" rx="12" fill="#e5484d"/>
+  <path d="M207 200v-18a28 28 0 0 1 56 0v18" fill="none" stroke="#e5484d" stroke-width="12"/>
+  <circle cx="235" cy="232" r="9" fill="#fff"/><rect x="231" y="236" width="8" height="20" rx="3" fill="#fff"/>
+  <text x="310" y="140" font-family="Arial, sans-serif" font-size="56" font-weight="900" fill="#ffffff">C3RB3R</text>
+  <text x="312" y="190" font-family="monospace" font-size="30" font-weight="700" fill="#f7c531">*.L0CK3D</text>
+  <text x="312" y="236" font-family="Arial, sans-serif" font-size="22" fill="#c9d3ee">NAS Ransomware</text>
+  <text x="312" y="268" font-family="Arial, sans-serif" font-size="18" fill="#3fd6e0">Update DSM · Backup · No Exposure</text>
+</svg>

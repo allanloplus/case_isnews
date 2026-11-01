@@ -16,7 +16,7 @@
 ```
 index.html                         個案總覽首頁（依 cases.js 自動產生卡片）
 assets/css/style.css               共用樣式
-assets/js/main.js                  共用互動（捲動動畫、時間軸、攻擊流程動畫、分頁、檢核清單、阿拉蕾提示）
+assets/js/main.js                  共用互動（捲動動畫、時間軸、攻擊流程動畫、勒索攻防模擬器、分頁、檢核清單、阿拉蕾提示）
 assets/js/cases.js                 個案登錄表
 assets/img/characters/*.png        角色姿勢與表情（透明背景）
 assets/img/characters/sheets/      原始角色設定圖
@@ -32,7 +32,7 @@ cases/<slug>/index.html            各個案頁面
    - 攻擊／流程動畫：修改 `.attack-stage` 內的 `.node`，以及下方 `<script type="application/json">` 的步驟（`node` 是節點索引，`evil: true` 會顯示紅色）。
    - 問題討論：每題是一個 `<details class="qa card">`，參考答案放在 `.answer` 內。
    - 行動清單：`data-checklist` 要用新的唯一名稱，避免和其他個案的勾選進度混在一起。
-3. 在 `assets/js/cases.js` 的陣列中新增一筆資料，首頁會自動顯示。
+3. 在 `assets/js/cases.js` 的陣列中新增一筆資料（記得填 `created` 建立日期時間），首頁會自動依建立日期由新到舊排序顯示。
 
 ## 可用的角色圖
 

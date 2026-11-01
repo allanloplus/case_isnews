@@ -44,7 +44,7 @@
   <section class="block" id="cases">
     <div class="sec-head">
       <div class="sec-num">📂</div>
-      <div><h2>個案總覽</h2><p>依日期由新到舊排列，點選卡片進入個案</p></div>
+      <div><h2>個案總覽</h2><p>依個案建立日期由新到舊排列，點選卡片進入個案</p></div>
     </div>
     <input class="search" type="search" id="q" placeholder="🔍 搜尋標題、摘要或主題…" aria-label="搜尋個案">
     <div class="filters" id="filters"></div>
@@ -101,7 +101,7 @@
 <script src="assets/js/cases.js"></script>
 <script>
 (function () {
-  const cases = (window.CASES || []).slice().sort((a, b) => b.date.localeCompare(a.date));
+  const cases = (window.CASES || []).slice().sort((a, b) => (b.created || b.date).localeCompare(a.created || a.date) || b.id.localeCompare(a.id));
   const grid = document.getElementById('grid');
   const q = document.getElementById('q');
   const filters = document.getElementById('filters');
@@ -135,7 +135,7 @@
           <h3>${esc(c.title)}</h3>
           <p>${esc(c.summary)}</p>
           <div class="chips">${c.topics.map((t) => `<span class="chip">${esc(t)}</span>`).join('')}</div>
-          <div class="meta"><span>🗓 ${esc(c.date)}</span><span>閱讀個案 →</span></div>
+          <div class="meta"><span>📰 新聞 ${esc(c.date)}｜🆕 建立 ${esc((c.created || '').slice(0, 10))}</span><span>閱讀個案 →</span></div>
         </div>
       </a>`).join('') +
       `<div class="card case-card soon"><div class="thumb">NEXT CASE</div><div class="body"><h3>下一則個案整理中…</h3><p>持續追蹤國內外資安與個資事件，敬請期待。</p></div></div>`;

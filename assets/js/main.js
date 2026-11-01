@@ -189,4 +189,63 @@
     $('.close', helper).addEventListener('click', () => { dismissed = true; helper.classList.remove('show'); });
     img.addEventListener('click', () => { dismissed = false; helper.classList.toggle('show'); });
   }
+
+  /* ---------- 勒索軟體攻防模擬器 ----------
+     <div data-ransim> 內需有：
+       input[data-def="patch|novpn|mfa|snap|offsite"]、input[name="vector"]、
+       .ransim-files、.ransim-log、[data-act="attack"]、[data-act="reset"] */
+  $$('[data-ransim]').forEach((root) => {
+    const files = $('.ransim-files', root);
+    const log = $('.ransim-log', root);
+    const N = 24;
+    const names = ['合約', '報價', '薪資', '客戶名單', '設計圖', '會計帳', '簡報', '照片', '專案', '人事', '採購', '會議紀錄'];
+    function build() {
+      files.innerHTML = Array.from({ length: N }, (_, k) =>
+        `<div class="file"><span class="fi">📄</span><span class="fn">${names[k % names.length]}${k >= names.length ? '_v2' : ''}.docx</span></div>`).join('');
+    }
+    build();
+    const has = (d) => $(`[data-def="${d}"]`, root).checked;
+    let busy = false;
+    const say = (html, cls) => { log.className = 'ransim-log ' + (cls || ''); log.innerHTML = html; };
+    const wait = (ms) => new Promise((r) => setTimeout(r, reduce ? 0 : ms));
+
+    async function attack() {
+      if (busy) return; busy = true; build();
+      root.classList.remove('blocked', 'hit');
+      const vec = $('input[name="vector"]:checked', root).value;
+      const vecName = { vuln: '利用已公開的 DSM 漏洞', cred: '使用外洩／暴力破解的帳密', zero: '利用尚未公開的新漏洞' }[vec];
+      say(`🕵️ 攻擊者掃描到你的 NAS，嘗試「${vecName}」入侵⋯`);
+      await wait(1300);
+      let blockedBy = null;
+      if (has('novpn')) blockedBy = '管理介面不對外開放（僅 VPN 可連）';
+      else if (vec === 'vuln' && has('patch')) blockedBy = 'DSM 已更新到最新版本';
+      else if (vec === 'cred' && has('mfa')) blockedBy = '雙重驗證＋停用預設 admin 帳號';
+      if (blockedBy) {
+        root.classList.add('blocked');
+        say(`🛡 <b>入侵失敗！</b>被「${blockedBy}」擋下。檔案安然無恙。`, 'ok');
+        busy = false; return;
+      }
+      root.classList.add('hit');
+      say('💥 <b>入侵成功！</b>攻擊者取得系統權限，開始加密檔案，同一台 NAS 上的備份檔也一併被加密⋯', 'bad');
+      const els = $$('.file', files);
+      for (const el of els) { el.classList.add('locked'); $('.fi', el).textContent = '🔒'; $('.fn', el).textContent = $('.fn', el).textContent.replace('.docx', '.L0CK3D'); await wait(70); }
+      await wait(500);
+      const snap = has('snap'), off = has('offsite');
+      if (!snap && !off) {
+        say('☠️ <b>所有檔案都被加密，放在同一台 NAS 上的備份也無法倖免。</b>沒有可用的備份，只剩「付贖金」或「接受資料遺失」兩條路——而且付錢也不保證拿得回來。', 'bad');
+        busy = false; return;
+      }
+      say(`⏳ 啟動復原：從${snap ? '<b>不可變快照</b>' : ''}${snap && off ? '與' : ''}${off ? '<b>異地／離線備份</b>' : ''}還原⋯`, 'warn');
+      await wait(1100);
+      for (const el of els) { el.classList.remove('locked'); el.classList.add('restored'); $('.fi', el).textContent = '📄'; $('.fn', el).textContent = $('.fn', el).textContent.replace('.L0CK3D', '.docx'); await wait(40); }
+      say(`✅ <b>資料已還原！</b>${snap ? '受保護（不可變）的快照無法被攻擊者竄改，' : ''}${off ? '異地／離線備份不受同一台 NAS 失守影響，' : ''}但系統仍需重建、查明入侵途徑，並評估資料是否外洩。`, 'ok');
+      busy = false;
+    }
+    root.addEventListener('click', (e) => {
+      const a = e.target.closest('[data-act]'); if (!a) return;
+      if (a.dataset.act === 'attack') attack();
+      if (a.dataset.act === 'reset' && !busy) { build(); root.classList.remove('blocked', 'hit'); say(log.dataset.init); }
+    });
+    log.dataset.init = log.innerHTML;
+  });
 })();
