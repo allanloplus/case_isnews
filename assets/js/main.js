@@ -248,4 +248,60 @@
     });
     log.dataset.init = log.innerHTML;
   });
+
+  /* ---------- 供應鏈爆炸半徑動畫 ----------
+     <div data-blast data-hub="名稱" data-brands="1329" data-people="4798255"
+> 內需有 .blast-svg、[data-act="blast"]、.blast-n1、.blast-n2 */
+  $$('[data-blast]').forEach((root) => {
+    const svgBox = $('.blast-svg', root);
+    const hub = root.dataset.hub || 'SaaS';
+    const W = 640, H = 420, cx = W / 2, cy = H / 2;
+    const NS = 'http://www.w3.org/2000/svg';
+    const el = (t, a) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); return e; };
+    const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': '供應鏈影響範圍示意' });
+    svgBox.appendChild(svg);
+    const brands = [], people = [];
+    const nB = 48, nP = 160;
+    for (let i = 0; i < nB; i++) {
+      const a = (i / nB) * Math.PI * 2, r = 120 + (i % 2) * 14;
+      const x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r * 0.78;
+      svg.appendChild(el('line', { x1: cx, y1: cy, x2: x, y2: y, class: 'bl-link' }));
+      brands.push(el('circle', { cx: x, cy: y, r: 6, class: 'bl-brand' }));
+    }
+    for (let i = 0; i < nP; i++) {
+      const a = (i / nP) * Math.PI * 2 + 0.02 * (i % 5), r = 175 + (i % 4) * 10;
+      people.push(el('circle', { cx: cx + Math.cos(a) * r * 1.35, cy: cy + Math.sin(a) * r * 0.95, r: 2.6, class: 'bl-person' }));
+    }
+    brands.forEach((b) => svg.appendChild(b));
+    people.forEach((p) => svg.appendChild(p));
+    svg.appendChild(el('circle', { cx, cy, r: 46, class: 'bl-hub' }));
+    const t = el('text', { x: cx, y: cy + 6, class: 'bl-hub-t', 'text-anchor': 'middle' }); t.textContent = hub; svg.appendChild(t);
+    const n1 = $('.blast-n1', root), n2 = $('.blast-n2', root);
+    const tB = +root.dataset.brands, tP = +root.dataset.people;
+    let running = false;
+    async function run() {
+      if (running) return; running = true;
+      root.classList.remove('done');
+      [...brands, ...people].forEach((c) => c.classList.remove('hit'));
+      svg.querySelector('.bl-hub').classList.add('hit');
+      const wait = (ms) => new Promise((r) => setTimeout(r, reduce ? 0 : ms));
+      const order = brands.map((b, i) => i).sort(() => Math.random() - 0.5);
+      for (let k = 0; k < order.length; k++) {
+        brands[order[k]].classList.add('hit');
+        n1.textContent = Math.round(tB * (k + 1) / order.length).toLocaleString('zh-TW');
+        await wait(28);
+      }
+      const pOrder = people.map((p, i) => i).sort(() => Math.random() - 0.5);
+      for (let k = 0; k < pOrder.length; k++) {
+        people[pOrder[k]].classList.add('hit');
+        n2.textContent = Math.round(tP * (k + 1) / pOrder.length).toLocaleString('zh-TW');
+        if (k % 4 === 0) await wait(12);
+      }
+      root.classList.add('done');
+      running = false;
+    }
+    root.addEventListener('click', (e) => { if (e.target.closest('[data-act="blast"]')) run(); });
+    const auto = new IntersectionObserver((en) => { if (en[0].isIntersecting) { run(); auto.disconnect(); } }, { threshold: 0.5 });
+    auto.observe(svgBox);
+  });
 })();

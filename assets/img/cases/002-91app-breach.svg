@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0b1530"/><stop offset="1" stop-color="#1d2f63"/></linearGradient></defs>
+  <rect width="640" height="360" fill="url(#bg)"/>
+  <g stroke="#2a3f7e" stroke-width="1.2">
+    <line x1="170" y1="180" x2="80" y2="90"/><line x1="170" y1="180" x2="60" y2="180"/><line x1="170" y1="180" x2="80" y2="270"/>
+    <line x1="170" y1="180" x2="170" y2="60"/><line x1="170" y1="180" x2="170" y2="300"/><line x1="170" y1="180" x2="260" y2="90"/>
+    <line x1="170" y1="180" x2="280" y2="180"/><line x1="170" y1="180" x2="260" y2="270"/>
+  </g>
+  <g fill="#f7c531"><circle cx="80" cy="90" r="9"/><circle cx="60" cy="180" r="9"/><circle cx="80" cy="270" r="9"/><circle cx="170" cy="60" r="9"/><circle cx="170" cy="300" r="9"/><circle cx="260" cy="90" r="9"/><circle cx="280" cy="180" r="9"/><circle cx="260" cy="270" r="9"/></g>
+  <g fill="#e5484d"><circle cx="40" cy="60" r="3"/><circle cx="30" cy="130" r="3"/><circle cx="25" cy="230" r="3"/><circle cx="45" cy="310" r="3"/><circle cx="120" cy="25" r="3"/><circle cx="220" cy="30" r="3"/><circle cx="300" cy="50" r="3"/><circle cx="315" cy="130" r="3"/><circle cx="320" cy="230" r="3"/><circle cx="300" cy="315" r="3"/><circle cx="210" cy="335" r="3"/><circle cx="120" cy="335" r="3"/></g>
+  <circle cx="170" cy="180" r="42" fill="#5a1a2c" stroke="#e5484d" stroke-width="5"/>
+  <text x="170" y="187" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="900" fill="#fff">SaaS</text>
+  <text x="350" y="130" font-family="Arial, sans-serif" font-size="50" font-weight="900" fill="#fff">1,329</text>
+  <text x="352" y="160" font-family="Arial, sans-serif" font-size="18" fill="#f7c531">brands affected</text>
+  <text x="350" y="225" font-family="Arial, sans-serif" font-size="50" font-weight="900" fill="#ff7a7e">4.79M</text>
+  <text x="352" y="255" font-family="Arial, sans-serif" font-size="18" fill="#c9d3ee">consumers' order data</text>
+  <text x="352" y="295" font-family="monospace" font-size="16" fill="#3fd6e0">AI agent · unpatched · DB key</text>
+</svg>

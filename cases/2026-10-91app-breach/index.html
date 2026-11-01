@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>個案 #002｜91APP 資料庫遭 AI 代理攻擊：一個未更新的內部工具，波及 1,329 個品牌｜從新聞，看個案</title>
+<meta name="description" content="從今周刊報導出發，以個案研究方式解析 91APP 資料庫遭 AI 自主滲透工具 ARTEX 攻擊事件：攻擊鏈、SaaS 供應鏈影響範圍、「先查明再通知」的取捨，以及管理、技術、法律、企業因應四大面向的討論題與顧問參考答案。">
+<link rel="stylesheet" href="../../assets/css/style.css">
+<link rel="icon" href="../../assets/img/characters/arale-laugh.png">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="container">
+    <a class="brand" href="../../index.html"><span class="logo">🔎</span><span>從新聞，看個案</span></a>
+    <nav class="toc" aria-label="本頁目錄">
+      <a href="#guide">新聞導讀</a>
+      <a href="#source">原始報導</a>
+      <a href="#links">相關新聞與公告</a>
+      <a href="#background">個案背景</a>
+      <a href="#timeline">事件時間軸</a>
+      <a href="#tech">技術解析</a>
+      <a href="#blast">影響範圍</a>
+      <a href="#notify">通知時機</a>
+      <a href="#keypoints">重點整理</a>
+      <a href="#discussion">問題討論</a>
+      <a href="#audit">稽核視角</a>
+      <a href="#checklist">行動清單</a>
+      <a href="#refs">資料來源</a>
+    </nav>
+  </div>
+  <div class="progress"></div>
+</header>
+
+<!-- ================= HERO ================= -->
+<section class="hero">
+  <div class="container">
+    <div>
+      <div class="eyebrow">
+        <span class="tag hot">個案 #002</span>
+        <span class="tag teal">文字新聞</span>
+        <span class="tag">個資外洩</span><span class="tag">SaaS 供應鏈</span><span class="tag">AI 代理攻擊</span>
+      </div>
+      <h1>91APP 資料庫遭 AI 代理攻擊<br><span class="hl">一個沒更新的內部工具</span></h1>
+      <p class="lead">台灣第一家上櫃的電商 SaaS 公司 91APP，因內部工具 Appsmith 未更新，被 AI 自主滲透工具 ARTEX 打進內網。攻擊者再從 GitLab 找到訂單資料庫的金鑰，最多 <b>1,329 個品牌、479 萬名消費者</b>的訂單個資受影響，冒名「定期購」的詐騙信隨之而來。這是一堂關於<b>供應鏈信任、機密管理與通知時機</b>的課。</p>
+      <div class="hero-meta">
+        <div>📰 來源：<b>今周刊</b></div>
+        <div>🗓 刊出：<b>2026-10-30</b></div>
+        <div>🏢 當事者：<b>91APP（6741）</b></div>
+        <div>👥 最大影響：<b>4,798,255 人</b></div>
+      </div>
+    </div>
+    <div class="hero-cast" aria-hidden="true">
+      <img class="allan" src="../../assets/img/characters/allan-full.png" alt="">
+      <img class="arale" src="../../assets/img/characters/arale-present.png" alt="">
+    </div>
+  </div>
+  <div class="ticker" aria-hidden="true">
+    <div class="track">
+      <span>攻擊者 10/3 11:00 存取 Commerce Cloud 訂單資料庫，10/14 23:00 完全阻斷</span>
+      <span>入侵起點：未更新套件的內部效率工具 Appsmith；資料庫金鑰取自 GitLab</span>
+      <span>最大影響範圍：1,329 個品牌、4,798,255 名消費者</span>
+      <span>不含信用卡與會員密碼；含姓名、電話、地址、Email、訂單紀錄</span>
+      <span>數發部數產署 10/19 會同資安院進行行政檢查</span>
+      <span>董事長何英圻致歉：10/8 成立緊急小組時就應同步提醒品牌</span>
+      <span>攻擊者 10/3 11:00 存取 Commerce Cloud 訂單資料庫，10/14 23:00 完全阻斷</span>
+      <span>入侵起點：未更新套件的內部效率工具 Appsmith；資料庫金鑰取自 GitLab</span>
+      <span>最大影響範圍：1,329 個品牌、4,798,255 名消費者</span>
+      <span>不含信用卡與會員密碼；含姓名、電話、地址、Email、訂單紀錄</span>
+      <span>數發部數產署 10/19 會同資安院進行行政檢查</span>
+      <span>董事長何英圻致歉：10/8 成立緊急小組時就應同步提醒品牌</span>
+    </div>
+  </div>
+</section>
+
+<main class="container">
+
+<!-- ================= 1. 新聞導讀 ================= -->
+<section class="block" id="guide" data-tip="我上個月在寶雅官網買過東西⋯⋯這則新聞跟我有關耶！大家一起來看看！" data-tip-img="../../assets/img/characters/arale-surprised.png">
+  <div class="sec-head reveal">
+    <div class="sec-num">01</div>
+    <div><h2>新聞導讀</h2><p>Allan Lo 顧問 × AI 小助手阿拉蕾</p></div>
+  </div>
+  <div class="dialogue">
+    <div class="say arale">
+      <div class="avatar"><img src="../../assets/img/characters/arale-surprised.png" alt="阿拉蕾"></div>
+      <div class="bubble"><span class="who">阿拉蕾</span><p>Allan 老師！我收到一封「定期購方案成功通知」，上面有我的名字、地址、電話，還叫我加 LINE 客服取消⋯⋯可是我根本沒訂啊！</p></div>
+    </div>
+    <div class="say allan">
+      <div class="avatar"><img src="../../assets/img/characters/allan-worried.png" alt="Allan Lo 顧問"></div>
+      <div class="bubble"><span class="who">Allan Lo 顧問</span><p>千萬別加！這就是 91APP 事件後出現的詐騙手法。你在很多品牌官網買東西，但背後的電商系統可能都是同一家 SaaS 供應商。這次<b>一家供應商出事，影響了 1,329 個品牌</b>。</p></div>
+    </div>
+    <div class="say arale">
+      <div class="avatar"><img src="../../assets/img/characters/arale-think.png" alt="阿拉蕾"></div>
+      <div class="bubble"><span class="who">阿拉蕾</span><p>新聞說駭客用了 AI 工具 ARTEX，好可怕！是 AI 太強，所以防不住嗎？</p></div>
+    </div>
+    <div class="say allan">
+      <div class="avatar"><img src="../../assets/img/characters/allan-point.png" alt="Allan Lo 顧問"></div>
+      <div class="bubble"><span class="who">Allan Lo 顧問</span><p>91APP 自己說得很好：「<b>攻擊工具的新穎，不改變公司的責任</b>」。破口是一個<b>沒更新的內部工具</b>，再加上<b>放在 GitLab 裡的資料庫金鑰</b>。AI 只是讓攻擊者更快找到這些老問題。</p></div>
+    </div>
+    <div class="say arale">
+      <div class="avatar"><img src="../../assets/img/characters/arale-confused.png" alt="阿拉蕾"></div>
+      <div class="bubble"><span class="who">阿拉蕾</span><p>還有一點我不懂：品牌 10/4 就有人收到詐騙信，為什麼消費者到月底才接到正式通知？</p></div>
+    </div>
+    <div class="say allan">
+      <div class="avatar"><img src="../../assets/img/characters/allan-think.png" alt="Allan Lo 顧問"></div>
+      <div class="bubble"><span class="who">Allan Lo 顧問</span><p>這是本案最值得討論的決策。董事長說「在懷疑與確認之間，我們選擇<b>先查明再通知</b>」，事後也承認 10/8 就該先提醒品牌。<b>「確認外洩」和「提醒防詐」其實可以分開做</b>，這就是今天的重點之一。</p></div>
+    </div>
+    <div class="say arale">
+      <div class="avatar"><img src="../../assets/img/characters/arale-fight.png" alt="阿拉蕾"></div>
+      <div class="bubble"><span class="who">阿拉蕾</span><p>了解！那我們一樣從<b>管理、技術、法律、企業因應</b>四個面向，來拆解這個個案！</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 2. 原始報導 ================= -->
+<section class="block" id="source" data-tip="建議點進今周刊原文閱讀，裡面也有補償申請方式喔！" data-tip-img="../../assets/img/characters/arale-explain.png">
+  <div class="sec-head reveal">
+    <div class="sec-num">02</div>
+    <div><h2>原始報導</h2><p>91APP 資料庫遭駭！寶雅、adidas、康是美⋯1329 個品牌遭殃，密碼、信用卡資料安全嗎？補償方式一次看</p></div>
+  </div>
+  <div class="grid g2">
+    <div class="card news-card reveal">
+      <div class="masthead"><span>今周刊 BUSINESS TODAY</span><span class="small muted">2026-10-30</span></div>
+      <h3>91APP 資料庫遭駭！寶雅、adidas、康是美⋯1329 個品牌遭殃，密碼、信用卡資料安全嗎？補償方式一次看</h3>
+      <blockquote>報導重點：91APP Commerce Cloud 一座訂單資料庫於 10/3 遭 ARTEX AI Agent 自動化攻擊。破口為第三方工具 AppSmith 未及時更新，駭客進入內網後在 GitLab 找到資料庫金鑰。最大可能影響 1,329 個品牌、479 萬 8,255 名消費者（2025/4/4 至 2026/10/14 間下單者）。可能外洩：姓名、電話、地址、Email、訂單紀錄；不含信用卡與會員密碼。91APP 承諾不論有無財損，個資遭竊取者都會賠償，11/2 開放補償申請。</blockquote>
+      <p class="small muted" style="margin:0">（以上為本站整理之摘要，完整內容請閱讀原文。）</p>
+      <div><a class="btn" href="https://www.businesstoday.com.tw/article/category/183030/post/202610300008/" target="_blank" rel="noopener" style="text-decoration:none; display:inline-block">閱讀今周刊原文 ↗</a></div>
+    </div>
+    <div class="card reveal d1">
+      <h3>📌 個案基本資料</h3>
+      <dl class="factbox">
+        <dt>報導來源</dt><dd>今周刊（2026-10-30，陳彥澐整理）</dd>
+        <dt>當事企業</dt><dd>91APP（6741，台灣第一家上櫃 SaaS 公司）</dd>
+        <dt>受害系統</dt><dd>Commerce Cloud 其中一座訂單資料庫</dd>
+        <dt>未受影響</dt><dd>Marketing Cloud、91APP Payments、iCHEF</dd>
+        <dt>入侵途徑</dt><dd>未更新套件的內部工具 Appsmith → 內網 → GitLab 取得資料庫金鑰</dd>
+        <dt>攻擊工具</dt><dd>ARTEX：AI 自主滲透測試系統（多代理、可串接多種大型語言模型）</dd>
+        <dt>駐留期間</dt><dd>10/3 11:00 存取 → 10/14 23:00 完全阻斷（約 11.5 天）</dd>
+        <dt>影響規模</dt><dd>最多 1,329 個品牌、4,798,255 名消費者（最大可能範圍）</dd>
+        <dt>主管機關</dt><dd>數位發展部數位產業署（10/19 行政檢查）</dd>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 3. 相關新聞與公告 ================= -->
+<section class="block" id="links" data-tip="官方報告、主管機關新聞稿、國內外報導都整理在這裡，方便你做簡報引用！" data-tip-img="../../assets/img/characters/arale-present.png">
+  <div class="sec-head reveal">
+    <div class="sec-num">03</div>
+    <div><h2>相關新聞、公告與連結</h2><p>當事者說法、主管機關、國內報導與 ARTEX 國際脈絡</p></div>
+  </div>
+  <div class="linkhub">
+    <div class="card reveal">
+      <h3>🏢 當事者與主管機關</h3>
+      <ul class="links">
+        <li><span class="badge off">官方</span><a href="https://91app.com/blog/91app-202610-security-incident/" target="_blank" rel="noopener">91APP《2026 遭受駭客攻擊事件 18 天調查報告》</a><span class="lm">2026-10-22｜時間軸、破口（Appsmith、GitLab）、處置、致歉與補償承諾；頁面表示將持續更新</span></li>
+        <li><span class="badge off">主管機關</span><a href="https://moda.gov.tw/ADI/news/latest-news/21118" target="_blank" rel="noopener">數位產業署：91APP 電商平台資料庫遭未授權存取，已啟動行政檢查</a><span class="lm">會同國家資通安全研究院及外部專家，檢視取得途徑、權限管理與異常偵測機制</span></li>
+        <li><span class="badge off">資安院</span><a href="https://www.nics.nat.gov.tw/latest_news/announcements/News/a3964373-0bf8-4abb-a77a-ca879f0e5d54/" target="_blank" rel="noopener">國家資通安全研究院：PHP 揭露嚴重漏洞、AI 滲透測試工具 ARTEX 遭駭客大規模濫用</a><span class="lm">提醒儘速採取資安防護措施（本站讀取時頁面內文未顯示，僅見標題）</span></li>
+        <li><span class="badge off">消費者</span><a href="https://165.npa.gov.tw/" target="_blank" rel="noopener">165 全民防騙網</a><span class="lm">收到可疑「定期購／重複訂購」通知，可撥 165 查證</span></li>
+      </ul>
+    </div>
+    <div class="card reveal d1">
+      <h3>📰 國內報導（依時間）</h3>
+      <ul class="links">
+        <li><a href="https://www.ithome.com.tw/news/179872" target="_blank" rel="noopener">iThome：91APP 資安事件持續延燒，多家合作品牌示警</a><span class="lm">消費者接獲疑似詐騙郵件</span></li>
+        <li><a href="https://www.businesstoday.com.tw/article/category/183030/post/202610190005/" target="_blank" rel="noopener">今周刊：收到「定期購」詐騙信別上當！91APP 驚傳遭駭客攻擊⋯業者祭 5 措施因應</a><span class="lm">2026-10-19｜受害品牌、詐騙手法、五項因應措施</span></li>
+        <li><a href="https://www.ithome.com.tw/news/179873" target="_blank" rel="noopener">iThome：數產署已啟動行政檢查，釐清個資影響範圍</a><span class="lm">另見 <a href="https://udn.com/news/story/7266/9826960" target="_blank" rel="noopener">聯合新聞網</a>、<a href="https://ec.ltn.com.tw/article/breakingnews/5612946" target="_blank" rel="noopener">自由財經</a></span></li>
+        <li><a href="https://www.bnext.com.tw/article/92706/91app-database-attack-scam-emails" target="_blank" rel="noopener">數位時代：91APP 資料庫遭攻擊與詐騙信</a><span class="lm">重大訊息「事實發生日」10/14 與攻擊日 10/3 的落差</span></li>
+        <li><a href="https://www.bnext.com.tw/article/92753/91app-data-breach-compensation-security-measures" target="_blank" rel="noopener">數位時代：91APP 補償與資安措施</a><span class="lm">18 天報告重點、董事長致歉</span></li>
+        <li><a href="https://www.ithome.com.tw/news/180105" target="_blank" rel="noopener">iThome：全家行動購部分會員資料遭非法擷取，起因是委外廠商 91APP 資料庫遭自動化攻擊</a><span class="lm">品牌端的揭露案例</span></li>
+      </ul>
+    </div>
+    <div class="card reveal">
+      <h3>🌏 ARTEX 與 AI 代理攻擊（國際）</h3>
+      <ul class="links">
+        <li><a href="https://en.sedaily.com/international/2026/10/20/chinese-ai-hacking-tool-used-on-korean-banks-also-hit" target="_blank" rel="noopener">Seoul Economic Daily：Chinese AI Hacking Tool Suspected in Attacks on Both Korean Banks and Japanese Firms</a><span class="lm">2026-10-20｜南韓金融業與日本企業攻擊的關聯</span></li>
+        <li><a href="https://www.digitaltoday.co.kr/en/view/115187/theori-releases-in-depth-analysis-white-paper-on-ai-hacking-tool-artex" target="_blank" rel="noopener">Digital Today：Theori 發布 ARTEX 深度分析白皮書</a><span class="lm">2026-10-15｜AI 工具攻擊會留下請求順序、頻率、重複性等行為特徵</span></li>
+        <li><a href="https://securitypointbreak.com/2026/10/07/beyond-shinhan-south-koreas-bank-hacks-hit-66000-with-an-ai-clue/" target="_blank" rel="noopener">Security Point Break：南韓銀行入侵案與 ARTEX 線索</a><span class="lm">報導指 7 家金融機構、逾 6.6 萬人受影響（歸因未經官方確認）</span></li>
+        <li><a href="https://airisk.mit.edu/ai-incidents/1782-attackers-reportedly-used-artex-an-ai-security-testing" target="_blank" rel="noopener">MIT AI Risk Repository：ARTEX 事件條目</a><span class="lm">AI 資安測試工具遭濫用的事件紀錄</span></li>
+        <li><a href="https://www.secureleap.tech/blog/what-is-artex-agentic-ai" target="_blank" rel="noopener">SecureLeap：What Is ARTEX? The AI Pentest Tool Turned Bank Hacker</a><span class="lm">工具架構與「僅供授權測試」的使用聲明</span></li>
+      </ul>
+    </div>
+    <div class="card reveal d1">
+      <h3>🔗 延伸關聯</h3>
+      <ul class="links">
+        <li><span class="badge case">本站個案</span><a href="../2026-10-php2shell/index.html">個案 #001：AI 揪出潛藏十多年的 PHP 漏洞（PHP2Shell）</a><span class="lm">AI 讓防守方找到漏洞；本案則是攻擊方用 AI 找到破口。資安院同一則公告並列兩事件</span></li>
+        <li><span class="badge case">本站個案</span><a href="../2026-10-synology-c3rb3r/index.html">個案 #003：群暉 NAS 遭 C3RB3R 勒索軟體攻擊</a><span class="lm">同樣是「修補已釋出、但沒有更新」造成的事件</span></li>
+        <li><a href="https://www.infosecurity-magazine.com/news/appsmith-flaw-account-takeovers/" target="_blank" rel="noopener">Infosecurity Magazine：Critical Appsmith Flaw Enables Account Takeovers</a><span class="lm">背景參考：2026 年 Appsmith 曾揭露 CVE-2026-22794（9.6）等漏洞；91APP 未說明被利用的是哪一個</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 4. 個案背景 ================= -->
+<section class="block" id="background" data-tip="消費者以為自己是跟品牌買東西，其實資料可能存在品牌的供應商那裡。這就是 SaaS 供應鏈！" data-tip-img="../../assets/img/characters/arale-think.png">
+  <div class="sec-head reveal">
+    <div class="sec-num">04</div>
+    <div><h2>個案背景：電商 SaaS 的「集中風險」</h2><p>一家供應商、上千個品牌、數百萬名消費者</p></div>
+  </div>
+  <div class="grid g3">
+    <div class="card reveal">
+      <h3>🏬 品牌背後的同一套系統</h3>
+      <p>91APP 提供品牌官網、App 與門市整合的電商雲服務，客戶包括寶雅、康是美、adidas、PUMA、Timberland、全家行動購等。消費者面對的是品牌，資料卻集中在同一家供應商。</p>
+    </div>
+    <div class="card reveal d1">
+      <h3>🧰 不起眼的「內部效率工具」</h3>
+      <p>Appsmith 是開源的低程式碼平台，常用來快速做內部管理介面。這類工具往往由工程團隊自行架設，不一定在正式的資產與修補管理範圍內，卻可能連得到核心系統。</p>
+    </div>
+    <div class="card reveal d2">
+      <h3>🤖 AI 代理讓掃描變便宜</h3>
+      <p>ARTEX 是可自主偵察、找漏洞、規劃路徑並執行攻擊的 AI 滲透測試框架。原本為授權測試設計，2026 年 9 至 10 月卻被用於攻擊南韓金融業、日本企業等多國組織。</p>
+    </div>
+  </div>
+  <div class="card reveal" style="margin-top:20px">
+    <h3>⚖️ 本案的三種角色</h3>
+    <div class="table-scroll">
+      <table class="tbl">
+        <thead><tr><th>角色</th><th>本案對象</th><th>個資法上的位置</th><th>本案中的處境</th></tr></thead>
+        <tbody>
+          <tr><td>消費者（當事人）</td><td>479 萬名下單者</td><td>個資當事人</td><td>收到冒名詐騙信，但不知道自己的資料存在哪家供應商</td></tr>
+          <tr><td>品牌（委託者）</td><td>1,329 個品牌</td><td>蒐集個資的非公務機關，對受託者負監督責任</td><td>最先接到客訴，卻要等供應商查明才知道狀況</td></tr>
+          <tr><td>SaaS 平台（受託者）</td><td>91APP</td><td>受委託處理個資者，於本法適用範圍內視同委託者</td><td>持有資料與日誌，掌握調查主導權</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 5. 時間軸 ================= -->
+<section class="block" id="timeline" data-tip="注意 10/4 到 10/15 這段：一邊在查，一邊詐騙信持續寄出。" data-tip-img="../../assets/img/characters/arale-surprised.png">
+  <div class="sec-head reveal">
+    <div class="sec-num">05</div>
+    <div><h2>事件時間軸</h2><p>依 91APP 調查報告與媒體報導整理（2026 年）</p></div>
+  </div>
+  <div class="grid g2">
+    <div class="timeline">
+      <div class="fill"></div>
+      <div class="tl-phase">PHASE 1 · 入侵與異常</div>
+      <div class="tl-item"><div class="tl-date">09 – 10 月</div><h4>ARTEX 被用於多國攻擊</h4><p>南韓多家金融機構、日本企業等陸續遭 AI 代理工具攻擊（91APP 稱南韓銀行、日本約 20 家、美國逾百家網站）。</p></div>
+      <div class="tl-item alert"><div class="tl-date">10/03 11:00</div><h4>攻擊者存取訂單資料庫</h4><p>經未更新的 Appsmith 進入內網，在 GitLab 取得資料庫金鑰。</p></div>
+      <div class="tl-item alert"><div class="tl-date">10/04</div><h4>第一家客戶通報詐騙訊息</h4><p>消費者收到詐騙訊息；初步盤查未發現大規模外流證據。（另有品牌稱 10/5 即發現異常）</p></div>
+      <div class="tl-item"><div class="tl-date">10/06 – 10/07</div><h4>與客戶聯合分析、5 家品牌同日通報</h4><p>詐騙資料與 91APP 資料部分不一致、來源未定；10/7 單日再有 5 家品牌通報，內部升級。</p></div>
+      <div class="tl-phase">PHASE 2 · 調查與阻斷</div>
+      <div class="tl-item"><div class="tl-date">10/08</div><h4>成立緊急應變小組</h4><p>決議委請外部團隊。董事長事後坦言：此時就應同步提醒品牌。</p></div>
+      <div class="tl-item"><div class="tl-date">10/09 – 10/11</div><h4>委聘奧義智慧科技、連假全系統盤查</h4><p>大規模分析各系統日誌。</p></div>
+      <div class="tl-item alert"><div class="tl-date">10/14</div><h4>確認破口，23:00 完全阻斷</h4><p>發現內部 CI 主機 10/3 的未授權執行紀錄；下線受攻擊工具、隔離網路、關閉資料庫對外連線、停用受害帳號、更換金鑰與帳號。重大訊息所列「事實發生日」亦為此日。</p></div>
+      <div class="tl-item"><div class="tl-date">10/15</div><h4>依個資法通報主管機關</h4><p>並開始向客戶說明。</p></div>
+      <div class="tl-phase">PHASE 3 · 揭露、檢查與補償</div>
+      <div class="tl-item"><div class="tl-date">10/19</div><h4>數產署行政檢查</h4><p>會同國家資通安全研究院及外部專家至 91APP 實地檢查；91APP 宣布五項因應措施並已報案。</p></div>
+      <div class="tl-item"><div class="tl-date">10/22</div><h4>發布 18 天調查報告、董事長致歉</h4><p>承諾對因本事件遭詐騙而有財損者全面補償，開放電話與信箱登記。</p></div>
+      <div class="tl-item alert"><div class="tl-date">10/29</div><h4>公布最大影響範圍</h4><p>2025/4/4 至 2026/10/14 間的訂單，最多 1,329 個品牌、4,798,255 名消費者；補償擴大為「個資遭竊取即賠償」。</p></div>
+      <div class="tl-item"><div class="tl-date">11/02 11:00</div><h4>補償申請表開放（預定）</h4><p>專屬聯絡窗口開放至 2027/2/1。</p></div>
+    </div>
+    <div>
+      <div class="card reveal" style="position:sticky; top:84px">
+        <h3>⏱ 關鍵觀察：三個「時間差」</h3>
+        <div class="grid g2" style="margin:14px 0">
+          <div class="stat red" style="padding:16px 10px"><div class="num" data-count="11" data-suffix="<small>天</small>">0</div><div class="label">入侵到完全阻斷</div><div class="src">10/3 → 10/14</div></div>
+          <div class="stat red" style="padding:16px 10px"><div class="num" data-count="26" data-suffix="<small>天</small>">0</div><div class="label">入侵到公布影響範圍</div><div class="src">10/3 → 10/29</div></div>
+        </div>
+        <ul class="small" style="padding-left:1.2em; margin:0 0 12px">
+          <li><b>偵測差：</b>入侵被發現，是因為消費者收到詐騙信，而不是監控告警。</li>
+          <li><b>通知差：</b>10/8 已啟動應變，品牌與消費者的防詐提醒卻較晚才全面展開。</li>
+          <li><b>範圍差：</b>品牌起初被告知影響「近兩個月」，後來擴大為 2025 年 4 月起的訂單。</li>
+        </ul>
+        <p class="note warn small" style="margin:0">各方說法有出入：有品牌稱 10/5 即發現異常；重大訊息的「事實發生日」為 10/14，與攻擊日 10/3 不同。教學時可討論「事實發生日」該怎麼定義。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 6. 技術解析 ================= -->
+<section class="block" id="tech" data-tip="按播放看攻擊路徑。你會發現每一步都是很「傳統」的問題，AI 只是把它們串起來而已。" data-tip-img="../../assets/img/characters/arale-holo.png">
+  <div class="sec-head reveal">
+    <div class="sec-num">06</div>
+    <div><h2>技術解析：從內部工具到 479 萬筆訂單</h2><p>攻擊鏈與每一關本該擋下的控制措施（概念說明）</p></div>
+  </div>
+
+  <div class="attack reveal" data-attack>
+    <h3>🎬 攻擊流程動畫</h3>
+    <div class="attack-stage">
+      <div class="packet"></div>
+      <div class="node"><div class="ico">🤖</div><b>AI 代理偵察</b><span>ARTEX 自動掃描、找漏洞、規劃路徑</span></div>
+      <div class="node danger"><div class="ico">🧰</div><b>內部工具 Appsmith</b><span>套件未更新，成為入口</span></div>
+      <div class="node danger"><div class="ico">🔑</div><b>GitLab／CI 主機</b><span>找到訂單資料庫金鑰</span></div>
+      <div class="node danger"><div class="ico">🗄</div><b>訂單資料庫</b><span>姓名、電話、地址、Email、訂單</span></div>
+      <div class="node danger"><div class="ico">🎣</div><b>冒名詐騙</b><span>假「定期購」通知、假 LINE 客服</span></div>
+    </div>
+    <div class="attack-caption">按下「播放攻擊流程」，或用「下一步」逐步觀看。</div>
+    <div class="controls">
+      <button class="btn" data-act="play">▶ 播放攻擊流程</button>
+      <button class="btn ghost" data-act="prev">◀ 上一步</button>
+      <button class="btn ghost" data-act="next">下一步 ▶</button>
+      <button class="btn ghost" data-act="reset">↺ 重設</button>
+      <div class="step-dots"></div>
+    </div>
+    <script type="application/json">[
+      {"node":0,"title":"AI 代理：便宜、快速、不眠不休","text":"ARTEX 是多代理架構的 AI 滲透測試工具，可串接多種大型語言模型，自動完成偵察、漏洞嗅探、攻擊路徑規劃與指令執行。對攻擊者而言，大量掃描與嘗試的成本變得很低。<br><b>本該擋下的控制：</b>縮小對外攻擊面、外部攻擊面管理（EASM）。"},
+      {"node":1,"title":"入口：一個沒更新的內部工具","text":"91APP 指出入侵起點是「一項未更新套件的內部效率工具（Appsmith）」。內部工具常由工程團隊自行架設，容易落在修補管理的範圍外，但它可以連到內部網路。<br><b>本該擋下的控制：</b>資產清冊涵蓋內部工具、弱點修補、內部工具不對外或需經 VPN／零信任存取。","evil":true},
+      {"node":2,"title":"橫向移動：金鑰放在程式碼庫","text":"攻擊者在內部 GitLab 找到訂單資料庫的金鑰（91APP 也提到內部 CI 主機有未授權執行紀錄）。把連線字串、Token 寫在程式碼或 CI 設定裡，是非常常見的「技術債」。<br><b>本該擋下的控制：</b>機密管理（Vault／Secrets Manager）、Secret 掃描、最小權限的 CI Token、定期輪替。","evil":true},
+      {"node":3,"title":"取得資料：一把金鑰打開一座庫","text":"拿到金鑰就能存取訂單資料庫，影響範圍涵蓋 2025/4/4 起的訂單。資料庫可從 CI 或內部工具所在網段直接連線，代表網段隔離不足；保存長達一年半的完整訂單個資，也放大了衝擊。<br><b>本該擋下的控制：</b>網段隔離、資料庫存取來源限制、資料最小化與保存期限、異常查詢告警。","evil":true},
+      {"node":4,"title":"變現：精準詐騙","text":"外洩資料不含信用卡與密碼，但「正確的姓名＋地址＋電話＋購買紀錄」足以做出可信度極高的詐騙信：假「定期購方案成功」、假「重複訂購」，引導加入假 LINE 客服。<br><b>本該擋下的控制：</b>早期防詐通知、品牌協同、消費者教育。","evil":true},
+      {"node":4,"title":"整體觀察：AI 串起了老問題","text":"整條攻擊鏈沒有一關是全新的漏洞類型：<b>未修補、機密外露、網段未隔離、偵測不足、資料保存過久</b>。AI 讓攻擊者能在數小時內把這些弱點串成一條完整路徑——防守方的基本功，必須比過去做得更完整、更快。","evil":true}
+    ]</script>
+  </div>
+
+  <div class="grid g3" style="margin-top:20px">
+    <div class="card reveal">
+      <h3>🛠 91APP 已採取的處置</h3>
+      <ul>
+        <li>下線遭攻擊的工具</li>
+        <li>更換所有內部系統 Token 與資料庫憑證</li>
+        <li>重建 GitLab 權限</li>
+        <li>隔離測試與正式環境；限制主機與資料庫的網段連線</li>
+        <li>保全受害主機跡證供調查</li>
+      </ul>
+    </div>
+    <div class="card reveal d1">
+      <h3>📋 10/19 宣布的五項措施</h3>
+      <ol>
+        <li>強化監控防禦，升級 24 小時監控</li>
+        <li>委由第三方中立單位調查，相關主機部署防護</li>
+        <li>落實自建系統、第三方系統與辦公網路的隔離</li>
+        <li>依調查結果持續優化防護機制</li>
+        <li>依法通報，主動以 Email 通知受影響客戶</li>
+      </ol>
+    </div>
+    <div class="card reveal d2">
+      <h3>🔍 如何偵測 AI 代理攻擊？</h3>
+      <ul>
+        <li>韓國 Theori 分析指出，AI 工具攻擊會留下<b>請求順序、頻率、重複性</b>等行為特徵</li>
+        <li>內部工具、CI 主機出現非預期的執行緒或指令</li>
+        <li>資料庫出現來自非應用伺服器網段的連線、大量匯出查詢</li>
+        <li>品牌客服突然湧入「沒訂購卻收到通知」的客訴，也是一種偵測訊號</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 7. 影響範圍（爆炸半徑） ================= -->
+<section class="block" id="blast" data-tip="看動畫就懂了：中間一個點出事，外圍上千個品牌、幾百萬人一起受影響。這就是「集中風險」。" data-tip-img="../../assets/img/characters/arale-sad.png">
+  <div class="sec-head reveal">
+    <div class="sec-num">07</div>
+    <div><h2>影響範圍：供應鏈的爆炸半徑</h2><p>一家 SaaS 供應商 → 1,329 個品牌 → 479 萬名消費者</p></div>
+  </div>
+  <div class="blast reveal" data-blast data-hub="91APP" data-brands="1329" data-people="4798255">
+    <div class="blast-svg"></div>
+    <div>
+      <h3>💥 爆炸半徑模擬</h3>
+      <div class="legend"><span><i style="background:#e5484d"></i>受影響核心</span><span><i style="background:#f7c531"></i>品牌客戶</span><span><i style="background:#e5484d"></i>消費者</span></div>
+      <div class="counter"><div class="v y blast-n1">0</div><div class="l">個品牌（最大可能範圍）</div></div>
+      <div class="counter"><div class="v r blast-n2">0</div><div class="l">名消費者（2025/4/4 – 2026/10/14 訂單）</div></div>
+      <div class="safe">✅ <b>未受影響：</b>Marketing Cloud、91APP Payments、iCHEF。服務之間有隔離，就能把衝擊限縮在一座資料庫。</div>
+      <div class="controls"><button class="btn" data-act="blast">▶ 重新播放</button></div>
+      <p class="small" style="color:#9fb0db; margin:8px 0 0">示意圖：每個點代表一群品牌或消費者，非實際比例。</p>
+    </div>
+  </div>
+  <div class="grid g2" style="margin-top:20px">
+    <div class="card reveal">
+      <h3>🗂 資料欄位：外洩了什麼？</h3>
+      <div class="chips" style="margin-bottom:10px">
+        <span class="chip bad">姓名</span><span class="chip bad">電話</span><span class="chip bad">配送地址</span><span class="chip bad">Email（如有填寫）</span><span class="chip bad">訂單紀錄</span>
+      </div>
+      <div class="chips">
+        <span class="chip ok">信用卡等支付資料：未涉及</span><span class="chip ok">會員登入密碼：未涉及</span>
+      </div>
+      <p class="small muted" style="margin:12px 0 0">💡 「沒有信用卡和密碼」不代表風險低。購買紀錄讓詐騙者能說出「你在 X 月 X 日買了 OO 商品」，可信度遠高於一般詐騙。</p>
+    </div>
+    <div class="card reveal d1">
+      <h3>🏷 報導中提及的受影響品牌（部分）</h3>
+      <div class="chips">
+        <span class="chip">寶雅</span><span class="chip">康是美</span><span class="chip">全家行動購</span><span class="chip">adidas</span><span class="chip">PUMA</span><span class="chip">UNDER ARMOUR</span><span class="chip">The North Face</span><span class="chip">Timberland</span><span class="chip">摩曼頓</span><span class="chip">日藥本舖</span><span class="chip">快車肉乾</span><span class="chip">布朗博士</span><span class="chip">媽媽好</span><span class="chip">OB 嚴選</span>
+      </div>
+      <p class="small muted" style="margin:12px 0 0">品牌名單整理自今周刊 10/19、10/30 報導，僅為部分；實際是否受影響以 91APP 及各品牌通知為準。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 8. 通知時機 ================= -->
+<section class="block" id="notify" data-tip="「確認外洩」需要時間，但「提醒防詐」不需要等到確認。兩條線可以平行跑！" data-tip-img="../../assets/img/characters/arale-explain.png">
+  <div class="sec-head reveal">
+    <div class="sec-num">08</div>
+    <div><h2>通知時機：「先查明」與「先提醒」</h2><p>本案實際做法 vs. 顧問建議的雙軌通知</p></div>
+  </div>
+  <div class="card reveal">
+    <div class="notify">
+      <div class="row head"><div></div><div>10/04</div><div>10/07</div><div>10/08</div><div>10/14</div><div>10/15</div><div>10/22 – 10/29</div></div>
+      <div class="row">
+        <div class="h">本案實際</div>
+        <div>第一家品牌通報詐騙；初步盤查</div>
+        <div>5 家品牌通報，內部升級</div>
+        <div class="act">成立應變小組（未同步提醒品牌）</div>
+        <div class="act">確認破口、阻斷</div>
+        <div>通報主管機關、開始說明</div>
+        <div class="late">調查報告、致歉、公布範圍與補償</div>
+      </div>
+      <div class="row">
+        <div class="h">建議雙軌</div>
+        <div class="good">啟動調查；請品牌留意客訴</div>
+        <div class="good">向所有品牌發「防詐預警」與統一話術</div>
+        <div class="good">品牌對消費者發防詐提醒（不需先確認外洩）</div>
+        <div class="good">確認後評估通報與正式通知範圍</div>
+        <div class="good">依法通報；公布階段性事實</div>
+        <div class="good">正式通知當事人、補償與持續更新</div>
+      </div>
+    </div>
+    <div class="grid g2" style="margin-top:18px">
+      <div>
+        <h4>🧭 為什麼企業傾向「先查明」？</h4>
+        <ul class="small">
+          <li>怕誤報造成恐慌、品牌流失、股價波動</li>
+          <li>初期證據不一致（詐騙資料與自家資料部分不符）</li>
+          <li>擔心通知內容不正確，後續要更正</li>
+        </ul>
+      </div>
+      <div>
+        <h4>✅ 「防詐提醒」為什麼可以先做？</h4>
+        <ul class="small">
+          <li>內容不必承認外洩：「近期有冒名詐騙，我們不會要求加 LINE、操作 ATM」</li>
+          <li>對消費者有立即保護效果，成本低</li>
+          <li>保留與品牌之間的信任——董事長事後也承認這是疏失</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 9. 重點整理 ================= -->
+<section class="block" id="keypoints" data-tip="八個重點，第 2、3 點是工程團隊明天就能做的！" data-tip-img="../../assets/img/characters/arale-thumb.png">
+  <div class="sec-head reveal">
+    <div class="sec-num">09</div>
+    <div><h2>個案重點整理</h2><p>八個帶得走的觀念</p></div>
+  </div>
+  <div class="keypoints">
+    <div class="card kp reveal"><h4>工具新穎，不改變責任</h4><p>AI 代理讓攻擊更快，但破口仍是未修補與管理缺口。對外說明時，「被 AI 攻擊」不能成為卸責理由。</p></div>
+    <div class="card kp reveal d1"><h4>內部工具也是資產</h4><p>低程式碼平台、管理後台、測試工具都要進資產清冊與修補流程，而且不應能任意連到正式資料庫。</p></div>
+    <div class="card kp reveal"><h4>金鑰不該住在程式碼庫</h4><p>資料庫憑證、Token 應放在機密管理系統，CI 以最小權限、短效憑證存取，並定期輪替與掃描。</p></div>
+    <div class="card kp reveal d1"><h4>隔離決定爆炸半徑</h4><p>Marketing Cloud、Payments、iCHEF 未受影響，正是隔離的價值；反之，測試與正式環境未隔離，讓一把金鑰就能打開訂單庫。</p></div>
+    <div class="card kp reveal"><h4>資料保存越久，風險越大</h4><p>一年半的完整訂單個資都在同一座庫。依目的訂定保存期限、過期資料去識別化或刪除，可以直接縮小外洩規模。</p></div>
+    <div class="card kp reveal d1"><h4>客訴是最後一道偵測</h4><p>本案是由消費者收到詐騙信才發現。若要早於客訴發現，需要針對內部工具、CI 與資料庫的行為監控。</p></div>
+    <div class="card kp reveal"><h4>確認與預警可以雙軌</h4><p>查明外洩需要時間，但防詐預警可以先發。供應商應在合約中承諾「疑似事件」就通知委託者。</p></div>
+    <div class="card kp reveal d1"><h4>委託者的責任跑不掉</h4><p>對消費者而言，品牌才是蒐集者。選擇 SaaS 供應商時的盡職調查、合約條款與監督，是品牌自己的功課。</p></div>
+  </div>
+</section>
+
+<!-- ================= 10. 問題討論 ================= -->
+<section class="block" id="discussion" data-tip="先自己想一想，再點開 Allan 顧問的參考答案。答案沒有標準，重點是思考脈絡！" data-tip-img="../../assets/img/characters/arale-think.png">
+  <div class="sec-head reveal">
+    <div class="sec-num">10</div>
+    <div><h2>問題討論與顧問參考答案</h2><p>管理｜技術｜法律｜企業因應 四大面向</p></div>
+  </div>
+
+  <div class="tabs" role="tablist" aria-label="討論面向">
+    <button class="tab" role="tab" aria-selected="true" aria-controls="p-mgmt" id="t-mgmt">🧭 管理面 <span class="n">4</span></button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="p-tech" id="t-tech">🛠 技術面 <span class="n">4</span></button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="p-law" id="t-law">⚖️ 法律面 <span class="n">4</span></button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="p-biz" id="t-biz">🏢 企業因應 <span class="n">4</span></button>
+    <button class="btn dark" data-expand="#discussion" style="margin-left:auto">展開全部參考答案</button>
+  </div>
+
+  <!-- ===== 管理面 ===== -->
+  <div class="panel" id="p-mgmt" role="tabpanel" aria-labelledby="t-mgmt">
+    <div class="panel-intro"><img src="../../assets/img/characters/arale-explain.png" alt=""><p><b>阿拉蕾：</b>管理面要問：一家連續 5,000 天沒出事的公司，制度哪裡出現了縫隙？</p></div>
+
+    <details class="qa card">
+      <summary><span class="qid">M1</span><span class="qtext">入侵起點是「內部效率工具」。為什麼工程團隊自行架設的工具，常常落在資產與修補管理之外？該如何納管？<small>關鍵字：影子 IT、開發者工具、資產清冊</small></span><span class="toggle"><span class="t-open">顧問參考答案</span><span class="t-close">收合</span></span></summary>
+      <div class="answer">
+        <div class="who"><img src="../../assets/img/characters/allan-think.png" alt="">Allan Lo 顧問</div>
+        <div>
+          <h5>常見原因</h5>
+          <ul>
+            <li>「只是內部用」的心態：認為不對外就不用管，卻忽略它能連到內網與資料庫。</li>
+            <li>以容器或開源套件快速架設，<b>沒有正式上線流程</b>，也就沒有登錄資產、指定擁有者。</li>
+            <li>弱點掃描與修補範圍只涵蓋「正式產品」，不含 GitLab、CI、低程式碼平台、監控面板等開發者工具。</li>
+          </ul>
+          <h5>建議作法</h5>
+          <ol>
+            <li>資產清冊納入<b>開發與維運工具鏈</b>（程式碼庫、CI/CD、內部工具、測試環境），每項都有擁有者。<span class="ctrl-ref">A.5.9</span></li>
+            <li>任何新工具上線前須經簡易的資安審查（存取方式、可連線範圍、更新機制）。<span class="ctrl-ref">A.5.8</span><span class="ctrl-ref">A.8.32</span></li>
+            <li>開發者工具同樣適用修補期限，並納入弱點掃描。<span class="ctrl-ref">A.8.8</span></li>
+            <li>以容器映像或套件清單（SBOM）追蹤內部工具的版本。</li>
+          </ol>
+          <div class="tip"><b>💡 稽核觀察：</b>驗證稽核抽查資產清冊時，常見「正式系統很完整，GitLab、Jenkins、Grafana、Appsmith 這類工具卻一個都沒有」。這些工具往往握有最多的機密。</div>
+        </div>
+      </div>
+    </details>
+
+    <details class="qa card">
+      <summary><span class="qid">M2</span><span class="qtext">董事長說「在懷疑與確認之間，我們選擇先查明再通知」，事後承認 10/8 就應提醒品牌。請設計一套「疑似事件」的通知決策機制。<small>關鍵字：通知門檻、雙軌通知、事件分級</small></span><span class="toggle"><span class="t-open">顧問參考答案</span><span class="t-close">收合</span></span></summary>
+      <div class="answer">
+        <div class="who"><img src="../../assets/img/characters/allan-point.png" alt="">Allan Lo 顧問</div>
+        <div>
+          <h5>把「通知」拆成三種</h5>
+          <div class="table-scroll"><table class="tbl">
+            <thead><tr><th>通知類型</th><th>觸發門檻</th><th>對象</th><th>內容</th></tr></thead>
+            <tbody>
+              <tr><td>防詐預警</td><td>出現冒名詐騙或疑似事件即可</td><td>委託客戶、消費者</td><td>不談是否外洩，只說明官方不會做的事與查證管道</td></tr>
+              <tr><td>疑似事件通知</td><td>啟動應變小組時</td><td>委託客戶（依合約）</td><td>正在調查的範圍、預計下次更新時間、窗口</td></tr>
+              <tr><td>正式個資事故通知</td><td>確認或無法排除外洩時</td><td>主管機關、當事人</td><td>依法規要求的事實、範圍、因應措施與聯絡方式</td></tr>
+            </tbody>
+          </table></div>
+          <h5>制度化要點</h5>
+          <ul>
+            <li>在事件應變程序中明定：<b>成立應變小組＝自動觸發「疑似事件通知」</b>，不需另行等待決策。<span class="ctrl-ref">A.5.24</span><span class="ctrl-ref">A.5.26</span></li>
+            <li>預先準備三種範本與核准流程，避免臨時撰稿。</li>
+            <li>每次通知都附上「下次更新時間」，以固定節奏更新，降低不確定感。</li>
+          </ul>
+          <div class="tip"><b>💡 顧問一句話：</b>「查明」是為了正確，「提醒」是為了保護。兩者不衝突，不必二選一。</div>
+        </div>
+      </div>
+    </details>
+
+    <details class="qa card">
+      <summary><span class="qid">M3</span><span class="qtext">91APP 原本有「連續 5,000 天無資安事件」的紀錄。這類指標能代表資安成熟度嗎？管理階層該看哪些指標？<small>關鍵字：資安 KPI、領先指標、管理審查</small></span><span class="toggle"><span class="t-open">顧問參考答案</span><span class="t-close">收合</span></span></summary>
+      <div class="answer">
+        <div class="who"><img src="../../assets/img/characters/allan-confused.png" alt="">Allan Lo 顧問</div>
+        <div>
+          <p>「無事件天數」是<b>落後指標</b>，而且只代表「沒有發現」，不代表「沒有發生」。本案正是由消費者收到詐騙信才發現入侵。</p>
+          <h5>建議改看領先指標</h5>
+          <div class="table-scroll"><table class="tbl">
+            <thead><tr><th>指標</th><th>回答的問題</th></tr></thead>
+            <tbody>
+              <tr><td>資產清冊涵蓋率（含開發工具）</td><td>我們知道自己有什麼嗎？</td></tr>
+              <tr><td>重大漏洞修補 SLA 達成率</td><td>修補跟得上嗎？</td></tr>
+              <tr><td>程式碼庫中偵測到的明文機密數量</td><td>金鑰有沒有亂放？</td></tr>
+              <tr><td>平均偵測時間（MTTD）、演練中的偵測率</td><td>出事時多久會知道？</td></tr>
+              <tr><td>個資保存超過期限的筆數</td><td>出事時會掉多少？</td></tr>
+            </tbody>
+          </table></div>
+          <p style="margin-top:10px"><span class="ctrl-ref">ISO 27001 §9.1</span><span class="ctrl-ref">§9.3</span></p>
+        </div>
+      </div>
+    </details>
+
+    <details class="qa card">
+      <summary><span class="qid">M4</span><span class="qtext">重大訊息的「事實發生日」是 10/14，但攻擊發生在 10/3、首次客訴在 10/4。上市櫃公司該如何定義資安事件的「事實發生日」與揭露時點？<small>關鍵字：重大訊息、公司治理、揭露一致性</small></span><span class="toggle"><span class="t-open">顧問參考答案</span><span class="t-close">收合</span></span></summary>
+      <div class="answer">
+        <div class="who"><img src="../../assets/img/characters/allan-think.png" alt="">Allan Lo 顧問</div>
+        <div>
+          <h5>可能的定義</h5>
+          <ul>
+            <li><b>攻擊發生日</b>（10/3）：事後才能確定，揭露當下通常未知。</li>
+            <li><b>知悉疑似事件日</b>（10/4 或 10/8 成立應變小組）</li>
+            <li><b>確認事件日</b>（10/14 確認破口）</li>
+          </ul>
+          <h5>建議</h5>
+          <ol>
+            <li>公司內部事先定義「重大資安事件」的判斷標準與「知悉」時點，並與法務、發言人、財務一致。</li>
+            <li>揭露時同時說明攻擊起始日、發現日、確認日，避免外界認為隱匿。</li>
+            <li>參考上市上櫃公司資通安全管控指引，資安長或資安專責單位應參與重大訊息判斷。<span class="ctrl-ref">A.5.5</span><span class="ctrl-ref">A.5.6</span></li>
+          </ol>
+          <div class="tip"><b>💡 顧問提醒：</b>投資人與媒體會拿各方時間點互相對照。日期不一致不一定違規，但沒有說明清楚，很容易被解讀為延遲揭露。</div>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- ===== 技術面 ===== -->
+  <div class="panel" id="p-tech" role="tabpanel" aria-labelledby="t-tech" hidden>
+    <div class="panel-intro"><img src="../../assets/img/characters/arale-holo.png" alt=""><p><b>阿拉蕾：</b>技術面聚焦在：金鑰怎麼管、網段怎麼切、AI 攻擊怎麼抓、資料該留多久。</p></div>
+
+    <details class="qa card">
+      <summary><span class="qid">T1</span><span class="qtext">攻擊者在 GitLab 找到資料庫金鑰。請提出一套「機密管理」改善方案，讓程式碼庫與 CI 不再成為金鑰倉庫。<small>關鍵字：Secrets Management、短效憑證、Secret Scanning</small></span><span class="toggle"><span class="t-open">顧問參考答案</span><span class="t-close">收合</span></span></summary>
+      <div class="answer">
+        <div class="who"><img src="../../assets/img/characters/allan-point.png" alt="">Allan Lo 顧問</div>
+        <div>
+          <ol>
+            <li><b>盤點：</b>以 Secret 掃描工具掃過所有程式碼庫的<b>完整歷史</b>（不只最新版本）、CI 變數、Wiki、Issue。</li>
+            <li><b>集中：</b>機密移到 Vault／雲端 Secrets Manager，應用程式在執行時取用，程式碼中不留明文。<span class="ctrl-ref">A.5.17</span><span class="ctrl-ref">A.8.24</span></li>
+            <li><b>短效：</b>資料庫改用動態或短效憑證；CI 改用 OIDC 等身分聯合，避免長期有效的 Token。</li>
+            <li><b>最小權限：</b>CI 只能取得該 Pipeline 需要的機密；測試環境的 CI 不能取得正式環境機密。<span class="ctrl-ref">A.8.2</span><span class="ctrl-ref">A.8.31</span></li>
+            <li><b>防再犯：</b>Pre-commit 與伺服器端 Push 保護，阻擋新的機密被提交。<span class="ctrl-ref">A.8.4</span><span class="ctrl-ref">A.8.28</span></li>
+            <li><b>輪替：</b>定期輪替，事件發生時能在數小時內全面更換（91APP 本次即更換了所有內部 Token 與資料庫憑證）。</li>
+          </ol>
+          <div class="tip"><b>💡 顧問經驗：</b>刪掉程式碼裡的密碼不等於安全，Git 歷史裡還在。發現外露的機密，唯一正確的處理是<b>立即輪替</b>。</div>
+        </div>
+      </div>
+    </details>
+
+    <details class="qa card">
+      <summary><span class="qid">T2</span><span class="qtext">內部工具與 CI 主機可以連到正式訂單資料庫。請說明理想的網段與環境隔離架構。<small>關鍵字：網段隔離、環境分離、零信任</small></span><span class="toggle"><span class="t-open">顧問參考答案</span><span class="t-close">收合</span></span></summary>
+      <div class="answer">
+        <div class="who"><img src="../../assets/img/characters/allan-think.png" alt="">Allan Lo 顧問</div>
+        <div>
+          <div class="table-scroll"><table class="tbl">
+            <thead><tr><th>區域</th><th>可連到正式資料庫？</th><th>說明</th></tr></thead>
+            <tbody>
+              <tr><td>正式應用伺服器</td><td><span class="chip ok">是（限定帳號與來源）</span></td><td>只允許必要的資料庫帳號與查詢權限</td></tr>
+              <tr><td>CI/CD</td><td><span class="chip warn">僅部署用</span></td><td>不直接讀取資料；部署憑證與執行時憑證分離</td></tr>
+              <tr><td>內部工具（如 Appsmith）</td><td><span class="chip warn">經 API，不直連</span></td><td>透過受控 API 存取必要欄位，並記錄稽核軌跡</td></tr>
+              <tr><td>測試環境</td><td><span class="chip bad">否</span></td><td>使用去識別化或合成資料</td></tr>
+              <tr><td>辦公網路</td><td><span class="chip bad">否</span></td><td>維運需經跳板機／特權存取管理，並啟用 MFA</td></tr>
+            </tbody>
+          </table></div>
+          <p style="margin-top:10px"><span class="ctrl-ref">A.8.22</span><span class="ctrl-ref">A.8.31</span><span class="ctrl-ref">A.8.3</span><span class="ctrl-ref">A.8.18</span></p>
+          <div class="tip"><b>💡 對照本案：</b>91APP 的 Marketing Cloud、Payments、iCHEF 未受影響，顯示產品之間已有一定隔離；事後補上的「隔離測試與正式環境、限制主機與資料庫網段連線」，正是這張表要做的事。</div>
+        </div>
+      </div>
+    </details>
+
+    <details class="qa card">
+      <summary><span class="qid">T3</span><span class="qtext">本案入侵持續約 11 天，是因客訴才發現。面對 AI 代理這類「快速、自動化」的攻擊，偵測策略要如何調整？<small>關鍵字：行為偵測、資料庫活動監控、誘餌</small></span><span class="toggle"><span class="t-open">顧問參考答案</span><span class="t-close">收合</span></span></summary>
+      <div class="answer">
+        <div class="who"><img src="../../assets/img/characters/allan-surprised.png" alt="">Allan Lo 顧問</div>
+        <div>
+          <h5>AI 代理攻擊的特性</h5>
+          <ul>
+            <li>速度快、嘗試多：短時間內大量、有規律的請求與指令。</li>
+            <li>行為模式化：Theori 分析指出會留下請求順序、頻率、重複性等特徵。</li>
+            <li>擅長串接既有弱點，而不是使用全新技術。</li>
+          </ul>
+          <h5>偵測建議</h5>
+          <ol>
+            <li><b>資料庫活動監控：</b>非預期來源連線、大量 SELECT／匯出、非上班時間查詢。<span class="ctrl-ref">A.8.16</span></li>
+            <li><b>開發工具鏈日誌：</b>GitLab 存取 CI 變數、非預期的 Pipeline 或執行緒（本案正是在 CI 主機發現未授權執行紀錄）。<span class="ctrl-ref">A.8.15</span></li>
+            <li><b>誘餌金鑰（Honeytoken）：</b>在程式碼庫放置假憑證，一被使用就告警。</li>
+            <li><b>客服訊號納入偵測：</b>建立客服與資安的通報管道，「收到奇怪通知」類客訴達門檻即通報資安。<span class="ctrl-ref">A.6.8</span></li>
+            <li><b>以 AI 對抗 AI：</b>用 AI 協助分析大量日誌，縮短調查時間（本案光是盤查日誌就花了數天）。</li>
+          </ol>
+        </div>
+      </div>
+    </details>
+
+    <details class="qa card">
+      <summary><span class="qid">T4</span><span class="qtext">受影響訂單可追溯到 2025 年 4 月。從「資料最小化」角度，電商平台該如何設計訂單個資的保存與保護？<small>關鍵字：保存期限、去識別化、欄位加密</small></span><span class="toggle"><span class="t-open">顧問參考答案</span><span class="t-close">收合</span></span></summary>
+      <div class="answer">
+        <div class="who"><img src="../../assets/img/characters/allan-worried.png" alt="">Allan Lo 顧問</div>
+        <div>
+          <ol>
+            <li><b>分層保存：</b>出貨完成、退換貨期滿後，配送地址與電話可移到存取更嚴格的封存區，或依目的刪除。<span class="ctrl-ref">A.8.10</span></li>
+            <li><b>去識別化：</b>分析與報表用途改用假名化資料，不需要完整姓名、電話。<span class="ctrl-ref">A.8.11</span></li>
+            <li><b>欄位加密：</b>電話、地址、Email 以應用層加密，金鑰另行管理；即使資料庫被讀取，也不會直接看到明文。<span class="ctrl-ref">A.8.24</span></li>
+            <li><b>目的與期限對齊：</b>依 ISO/IEC 27701 盤點每個欄位的蒐集目的與保存期限，並與委託品牌的隱私權政策一致。</li>
+          </ol>
+          <div class="tip"><b>💡 顧問一句話：</b>最好的外洩防護，是「不存在的資料不會外洩」。</div>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- ===== 法律面 ===== -->
+  <div class="panel" id="p-law" role="tabpanel" aria-labelledby="t-law" hidden>
+    <div class="panel-intro"><img src="../../assets/img/characters/arale-confused.png" alt=""><p><b>阿拉蕾：</b>出事的是 91APP，那寶雅、adidas 這些品牌也有責任嗎？<br><span class="small muted">（以下為一般性說明，不構成法律意見；個案請洽專業律師。）</span></p></div>
+
+    <details class="qa card">
+      <summary><span class="qid">L1</span><span class="qtext">在個資法下，品牌與 91APP 分別是什麼角色？通知當事人的義務由誰負責？品牌能否主張「是供應商出事」而免責？<small>關鍵字：委託關係、受託者、監督義務</small></span><span class="toggle"><span class="t-open">顧問參考答案</span><span class="t-close">收合</span></span></summary>
+      <div class="answer">
+        <div class="who"><img src="../../assets/img/characters/allan-point.png" alt="">Allan Lo 顧問</div>
+        <div>
+          <h5>角色</h5>
+          <ul>
+            <li><b>品牌：</b>向消費者蒐集個資的非公務機關，是委託者。</li>
+            <li><b>91APP：</b>受委託處理個資者。依<b>個資法第 4 條</b>，受委託者於本法適用範圍內，視同委託機關。</li>
+            <li><b>施行細則：</b>委託者應對受託者為適當之監督（包括預定的處理範圍、安全措施、複委託、違反時的通知、契約終止時資料的返還與刪除等），並定期確認執行狀況。</li>
+          </ul>
+          <h5>通知與責任</h5>
+          <ul>
+            <li><b>第 12 條</b>的通知義務，對當事人而言主要落在蒐集者（品牌）；實務上常由受託者協助執行（本案 91APP 取得品牌授權後以 Email／簡訊通知）。</li>
+            <li>品牌難以完全免責：若未盡監督義務（未評估供應商安全、未約定通報條款、未定期確認），可能被認為未採行適當安全措施。</li>
+            <li>品牌對消費者賠償後，可依合約向供應商求償。</li>
+          </ul>
+          <p><span class="ctrl-ref">A.5.19</span><span class="ctrl-ref">A.5.20</span><span class="ctrl-ref">A.5.34</span></p>
+        </div>
+      </div>
+    </details>
+
+    <details class="qa card">
+      <summary><span class="qid">L2</span><span class="qtext">數產署已啟動行政檢查，並表示若違反個資法將依法處理。企業可能面臨哪些行政責任？行政檢查時會被要求提出什麼？<small>關鍵字：個資法第 47、48 條、行政檢查、安全維護辦法</small></span><span class="toggle"><span class="t-open">顧問參考答案</span><span class="t-close">收合</span></span></summary>
+      <div class="answer">
+        <div class="who"><img src="../../assets/img/characters/allan-think.png" alt="">Allan Lo 顧問</div>
+        <div>
+          <h5>可能的行政責任</h5>
+          <ul>
+            <li><b>個資法第 48 條：</b>未採行適當安全措施者，主管機關可處罰鍰並令限期改正；屆期未改正者按次處罰，情節重大者可直接處以較高額罰鍰。</li>
+            <li>主管機關亦可依法要求限期提出改善報告，並持續追蹤。</li>
+          </ul>
+          <h5>行政檢查常被要求的資料</h5>
+          <ol>
+            <li>事件經過、時間軸與處置紀錄。<span class="ctrl-ref">A.5.26</span></li>
+            <li>受影響資料類型、筆數、對象的盤點結果。</li>
+            <li>個資檔案安全維護計畫及執行紀錄（權限管理、日誌、加密、委外監督）。</li>
+            <li>資料庫權限管理與異常偵測機制（數產署明確點名的檢查重點）。<span class="ctrl-ref">A.8.2</span><span class="ctrl-ref">A.8.16</span></li>
+            <li>通報與通知當事人的紀錄。</li>
+          </ol>
+          <div class="tip"><b>💡 顧問提醒：</b>行政檢查看的是「平時有沒有做、有沒有紀錄」。ISMS／PIMS 的文件與紀錄，就是這時候的證據。</div>
+        </div>
+      </div>
+    </details>
+
+    <details class="qa card">
+      <summary><span class="qid">L3</span><span class="qtext">91APP 承諾「不論有無財損，個資遭竊取者都會賠償」。從個資法的民事賠償規定來看，這個承諾的意義是什麼？若消費者提起團體訴訟會如何？<small>關鍵字：個資法第 28、29、34 條、法定賠償、團體訴訟</small></span><span class="toggle"><span class="t-open">顧問參考答案</span><span class="t-close">收合</span></span></summary>
+      <div class="answer">
+        <div class="who"><img src="../../assets/img/characters/allan-confused.png" alt="">Allan Lo 顧問</div>
+        <div>
+          <h5>個資法的民事賠償機制</h5>
+          <ul>
+            <li><b>第 29 條：</b>非公務機關違反規定致當事人權益受侵害，應負賠償責任，但能證明無故意或過失者不在此限（<b>舉證責任在企業</b>）。</li>
+            <li><b>法定賠償額（準用第 28 條）：</b>被害人不易或不能證明實際損害時，得請求法院依侵害情節，以<b>每人每一事件新臺幣 500 元以上、2 萬元以下</b>計算。</li>
+            <li><b>總額上限：</b>同一原因事實造成多數當事人損害，合計最高總額以新臺幣 2 億元為限，但能證明實際損害超過者不在此限。</li>
+            <li><b>第 34 條：</b>符合條件的公益團體可受讓請求權，提起<b>團體訴訟</b>。</li>
+          </ul>
+          <h5>試算給管理階層看</h5>
+          <p>479 萬人 × 最低 500 元 ≈ 24 億元，遠超過 2 億元的同一事件總額上限——這說明了大規模外洩的法律風險有多高，也說明為什麼企業會選擇主動提出補償方案，以降低訴訟與商譽成本。</p>
+          <div class="tip"><b>💡 顧問提醒：</b>補償方案的條件、申請方式、是否要求簽署和解或拋棄條款，都應經法務審慎設計，並避免讓補償流程本身成為詐騙者的冒用素材。</div>
+        </div>
+      </div>
+    </details>
+
+    <details class="qa card">
+      <summary><span class="qid">L4</span><span class="qtext">ARTEX 原本標榜「僅供授權測試」，卻被用於攻擊。企業自己使用 AI 滲透測試工具時，應注意哪些法律與治理問題？<small>關鍵字：授權範圍、雙用途工具、供應鏈風險</small></span><span class="toggle"><span class="t-open">顧問參考答案</span><span class="t-close">收合</span></span></summary>
+      <div class="answer">
+        <div class="who"><img src="../../assets/img/characters/allan-worried.png" alt="">Allan Lo 顧問</div>
+        <div>
+          <h5>企業使用 AI 滲透工具的注意事項</h5>
+          <ul>
+            <li><b>書面授權與範圍：</b>AI 代理會自主擴大探索，必須在技術上限制目標範圍，否則可能誤觸第三方系統，涉及刑法妨害電腦使用罪（第 358 條起）。</li>
+            <li><b>工具來源與供應鏈：</b>開源工具本身可能含有後門或回傳資料的機制，需評估來源、程式碼與網路行為。<span class="ctrl-ref">A.5.21</span></li>
+            <li><b>資料外流：</b>測試結果、系統資訊若送往外部模型服務，等同把弱點清單交給第三方，需確認資料處理條款。<span class="ctrl-ref">A.5.14</span><span class="ctrl-ref">A.5.23</span></li>
+            <li><b>人員監督：</b>保留人員核准關鍵動作（如利用漏洞、寫入資料）的機制，並留存完整日誌。</li>
+            <li><b>AI 治理：</b>可參考 ISO/IEC 42001 建立 AI 工具使用的風險評鑑與管理規範。</li>
+          </ul>
+          <div class="tip"><b>💡 對照本站個案 #001：</b>同樣是 AI，Calif 與 Wiz 用來找出 PHP 漏洞並負責任揭露；ARTEX 則被用來入侵。差別不在工具，而在授權與目的。</div>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- ===== 企業因應 ===== -->
+  <div class="panel" id="p-biz" role="tabpanel" aria-labelledby="t-biz" hidden>
+    <div class="panel-intro"><img src="../../assets/img/characters/arale-fight.png" alt=""><p><b>阿拉蕾：</b>企業因應從兩個角度看：如果你是 91APP，或如果你是使用 91APP 的品牌。</p></div>
+
+    <details class="qa card">
+      <summary><span class="qid">E1</span><span class="qtext">假設你是使用 91APP 的品牌資安負責人，10/4 客服開始接到「沒訂購卻收到定期購通知」的客訴。請列出你的 72 小時行動計畫。<small>關鍵字：委託者應變、供應商協同、消費者保護</small></span><span class="toggle"><span class="t-open">顧問參考答案</span><span class="t-close">收合</span></span></summary>
+      <div class="answer">
+        <div class="who"><img src="../../assets/img/characters/allan-point.png" alt="">Allan Lo 顧問</div>
+        <div>
+          <div class="table-scroll"><table class="tbl">
+            <thead><tr><th>時間</th><th>行動</th></tr></thead>
+            <tbody>
+              <tr><td><b>T+0～4h</b></td><td>收集詐騙樣本（寄件者、連結、內容），比對訊息中的資料可能來自哪個系統；正式通知 SaaS 供應商並要求回覆時限</td></tr>
+              <tr><td><b>T+4～24h</b></td><td>官網、App、社群發布<b>防詐公告</b>；客服統一話術；檢查自家其他系統（CRM、行銷工具）是否也是資料來源</td></tr>
+              <tr><td><b>T+24～48h</b></td><td>依合約要求供應商提供調查進度、受影響範圍與日誌；評估是否需通報主管機關；啟動自身事件紀錄</td></tr>
+              <tr><td><b>T+48～72h</b></td><td>向高階報告；與法務評估當事人通知義務與時點；準備正式通知範本</td></tr>
+            </tbody>
+          </table></div>
+          <div class="tip"><b>💡 重點：</b>品牌不必等供應商確認，就可以先發布防詐公告。對消費者來說，品牌才是他們信任的對象。<span class="ctrl-ref">A.5.24</span><span class="ctrl-ref">A.5.22</span></div>
+        </div>
+      </div>
+    </details>
+
+    <details class="qa card">
+      <summary><span class="qid">E2</span><span class="qtext">品牌在選擇或續約電商 SaaS 供應商時，應做哪些資安盡職調查？合約中該寫入哪些條款？<small>關鍵字：供應商評鑑、合約條款、持續監督</small></span><span class="toggle"><span class="t-open">顧問參考答案</span><span class="t-close">收合</span></span></summary>
+      <div class="answer">
+        <div class="who"><img src="../../assets/img/characters/allan-think.png" alt="">Allan Lo 顧問</div>
+        <div>
+          <h5>盡職調查清單</h5>
+          <ul>
+            <li>是否取得 ISO/IEC 27001、27701 或同等驗證？<b>驗證範圍</b>是否涵蓋你使用的服務與開發維運環境？</li>
+            <li>多租戶資料隔離方式、資料保存期限與刪除機制。</li>
+            <li>弱點管理與修補 SLA、機密管理方式、第三方滲透測試頻率。</li>
+            <li>事件應變程序與過往事件紀錄。</li>
+          </ul>
+          <h5>合約條款</h5>
+          <ol>
+            <li><b>疑似事件即通知</b>（例如 24 小時內），不以確認外洩為前提。</li>
+            <li>配合調查、提供日誌與受影響名單的義務。</li>
+            <li>協助通知當事人與補償的費用分擔。</li>
+            <li>資料保存期限、契約終止時的返還與刪除。</li>
+            <li>稽核權或提供第三方稽核報告的義務、複委託限制。</li>
+          </ol>
+          <p><span class="ctrl-ref">A.5.19</span><span class="ctrl-ref">A.5.20</span><span class="ctrl-ref">A.5.21</span><span class="ctrl-ref">A.5.22</span><span class="ctrl-ref">A.5.23</span></p>
+          <div class="tip"><b>💡 稽核員視角：</b>看到供應商的 ISO 27001 證書時，一定要看<b>適用範圍</b>與<b>適用性聲明</b>。證書範圍若只寫「行政管理」，就不代表你的資料受到保護。</div>
+        </div>
+      </div>
+    </details>
+
+    <details class="qa card">
+      <summary><span class="qid">E3</span><span class="qtext">請評析 91APP 的危機溝通：哪些做得好、哪些可以更好？<small>關鍵字：危機溝通、透明度、信任修復</small></span><span class="toggle"><span class="t-open">顧問參考答案</span><span class="t-close">收合</span></span></summary>
+      <div class="answer">
+        <div class="who"><img src="../../assets/img/characters/allan-smile.png" alt="">Allan Lo 顧問</div>
+        <div>
+          <div class="grid g2">
+            <div>
+              <h5>👍 做得好的</h5>
+              <ul>
+                <li>公開詳細時間軸與破口（Appsmith、GitLab），沒有只用「遭駭客攻擊」帶過。</li>
+                <li>董事長親自道歉，並明確承認「10/8 就應提醒品牌」的疏失。</li>
+                <li>強調「工具新穎不改變責任」，沒有把責任推給 AI。</li>
+                <li>公布最大可能影響範圍，而非最小值；補償不以「證明財損」為前提。</li>
+                <li>通知時明確告知官方寄件網域與「我們不會做的事」，降低二次詐騙。</li>
+              </ul>
+            </div>
+            <div>
+              <h5>🔧 可以更好的</h5>
+              <ul>
+                <li>疑似階段即發防詐預警，不等確認。</li>
+                <li>影響期間的說法前後變動（近兩個月 → 2025 年 4 月起），損及信任；初期應說明「調查中，範圍可能擴大」。</li>
+                <li>各方時間點（攻擊日、發現日、重大訊息事實發生日）宜一次說清楚。</li>
+                <li>提供消費者自行查詢「我是否受影響」的管道。</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </details>
+
+    <details class="qa card">
+      <summary><span class="qid">E4</span><span class="qtext">董事會看到這則新聞，應該問 IT／資安團隊哪五個問題？（分別從「我們是 SaaS 供應商」與「我們使用 SaaS」兩種角度）<small>關鍵字：資安治理、供應鏈監督</small></span><span class="toggle"><span class="t-open">顧問參考答案</span><span class="t-close">收合</span></span></summary>
+      <div class="answer">
+        <div class="who"><img src="../../assets/img/characters/allan-laugh.png" alt="">Allan Lo 顧問</div>
+        <div>
+          <div class="grid g2">
+            <div>
+              <h5>如果我們是供應商</h5>
+              <ol>
+                <li>我們的程式碼庫和 CI 裡，有沒有正式環境的金鑰？</li>
+                <li>內部工具有沒有在資產清冊與修補範圍內？</li>
+                <li>一個工具被攻破，最多能碰到多少客戶的資料？</li>
+                <li>多久能發現異常？是靠監控，還是靠客訴？</li>
+                <li>疑似事件時，我們多快會通知客戶？</li>
+              </ol>
+            </div>
+            <div>
+              <h5>如果我們使用 SaaS</h5>
+              <ol>
+                <li>我們的客戶個資存放在哪些供應商？</li>
+                <li>合約有沒有「疑似事件即通知」條款？</li>
+                <li>供應商的驗證範圍涵蓋我們用的服務嗎？</li>
+                <li>供應商出事時，我們的防詐公告誰來發、多快能發？</li>
+                <li>我們每年怎麼確認供應商的安全狀況？</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ================= 11. 稽核視角 ================= -->
+<section class="block" id="audit" data-tip="這次的稽核重點：A.8.4 原始碼存取、A.8.31 環境分離，還有供應商管理 A.5.19–5.23！" data-tip-img="../../assets/img/characters/arale-thumb.png">
+  <div class="sec-head reveal">
+    <div class="sec-num">11</div>
+    <div><h2>稽核員視角：ISO/IEC 27001:2022 與 27701 對照</h2><p>如果明天來驗證稽核，針對本案情境會看哪些證據？</p></div>
+  </div>
+  <div class="card reveal">
+    <div class="table-scroll">
+      <table class="tbl">
+        <thead><tr><th style="width:120px">控制措施</th><th>與本案的關聯</th><th>稽核時會請你提出的證據</th></tr></thead>
+        <tbody>
+          <tr><td><span class="ctrl-ref">A.5.9</span><br>資產清冊</td><td>內部工具 Appsmith 是否納管</td><td>含開發維運工具的資產清冊、擁有者、版本</td></tr>
+          <tr><td><span class="ctrl-ref">A.8.8</span><br>技術脆弱性管理</td><td>內部工具套件未更新</td><td>修補程序（涵蓋內部工具）、掃描報告、修補紀錄與 SLA 達成率</td></tr>
+          <tr><td><span class="ctrl-ref">A.5.17／A.8.24</span><br>鑑別資訊與密碼技術</td><td>資料庫金鑰存放於 GitLab</td><td>機密管理政策、Vault 設定、Secret 掃描結果、輪替紀錄</td></tr>
+          <tr><td><span class="ctrl-ref">A.8.4</span><br>原始碼存取</td><td>GitLab 權限過寬</td><td>程式碼庫權限清單、權限審查紀錄</td></tr>
+          <tr><td><span class="ctrl-ref">A.8.22／A.8.31</span><br>網路區隔、環境分離</td><td>內部工具／CI 可連正式資料庫</td><td>網路架構圖、防火牆規則、測試與正式環境分離證明</td></tr>
+          <tr><td><span class="ctrl-ref">A.8.15–8.16</span><br>日誌與監控</td><td>入侵 11 天後才確認</td><td>資料庫與 CI 日誌保存、異常告警規則、告警處理紀錄</td></tr>
+          <tr><td><span class="ctrl-ref">A.8.10–8.11</span><br>資訊刪除、遮蔽</td><td>保存一年半完整訂單個資</td><td>保存期限規範、刪除與去識別化執行紀錄</td></tr>
+          <tr><td><span class="ctrl-ref">A.5.24–5.28</span><br>事件管理</td><td>通知時機、證據保全</td><td>應變程序（含疑似事件通知）、事件紀錄、證據保全紀錄、事後檢討</td></tr>
+          <tr><td><span class="ctrl-ref">A.5.19–5.23</span><br>供應商關係（品牌端）</td><td>品牌對 SaaS 供應商的監督</td><td>供應商評鑑、合約資安與通報條款、年度監督紀錄</td></tr>
+          <tr><td><span class="ctrl-ref">A.5.34</span><br>隱私與 PII 保護</td><td>個資法遵與通知當事人</td><td>個資盤點、委外監督紀錄、通報與通知紀錄（ISO/IEC 27701 處理者控制措施）</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note small" style="margin:14px 0 0">📝 ISO/IEC 27701 對「個資處理者」（本案的 SaaS 平台）另有要求，例如協助控制者回應當事人、依約通知個資事故、遵循控制者指示處理資料，可一併檢視。</p>
+  </div>
+</section>
+
+<!-- ================= 12. 行動清單 ================= -->
+<section class="block" id="checklist" data-tip="勾選完成項目，進度會自動儲存在你的瀏覽器裡！" data-tip-img="../../assets/img/characters/arale-fight.png">
+  <div class="sec-head reveal">
+    <div class="sec-num">12</div>
+    <div><h2>企業自我檢核：行動清單</h2><p>供應商與品牌端都適用（進度儲存在本機瀏覽器）</p></div>
+  </div>
+  <div class="card reveal">
+    <div style="display:flex; justify-content:space-between; align-items:center"><b>完成度</b><span id="ck-label" class="muted small">0 / 0</span></div>
+    <div class="meter" id="ck-meter"><i></i></div>
+    <ul class="checklist" data-checklist="91app-breach" data-meter="#ck-meter" data-meter-label="#ck-label">
+      <li><input type="checkbox" id="c1"><label for="c1"><span class="when">立即</span>列出所有內部工具（低程式碼平台、管理後台、CI/CD、監控面板），確認版本已更新</label></li>
+      <li><input type="checkbox" id="c2"><label for="c2"><span class="when">立即</span>掃描所有程式碼庫（含歷史）與 CI 變數中的明文機密，外露者立即輪替</label></li>
+      <li><input type="checkbox" id="c3"><label for="c3"><span class="when">立即</span>確認內部工具與 CI 無法直接連線正式資料庫</label></li>
+      <li><input type="checkbox" id="c4"><label for="c4"><span class="when">立即</span>（品牌端）盤點客戶個資存放在哪些 SaaS 供應商，並確認緊急聯絡窗口</label></li>
+      <li><input type="checkbox" id="c5"><label for="c5"><span class="when w2">一週內</span>準備「防詐預警」範本，明列官方不會要求的事項與查證管道</label></li>
+      <li><input type="checkbox" id="c6"><label for="c6"><span class="when w2">一週內</span>事件應變程序加入「疑似事件通知」觸發條件與對象</label></li>
+      <li><input type="checkbox" id="c7"><label for="c7"><span class="when w2">一週內</span>建立客服客訴異常通報資安的門檻與管道</label></li>
+      <li><input type="checkbox" id="c8"><label for="c8"><span class="when w2">一週內</span>資料庫啟用異常來源連線與大量查詢告警</label></li>
+      <li><input type="checkbox" id="c9"><label for="c9"><span class="when w3">一個月內</span>導入機密管理系統，CI 改用短效憑證</label></li>
+      <li><input type="checkbox" id="c10"><label for="c10"><span class="when w3">一個月內</span>檢討訂單個資保存期限，過期資料刪除或去識別化</label></li>
+      <li><input type="checkbox" id="c11"><label for="c11"><span class="when w3">一個月內</span>（品牌端）SaaS 合約增訂疑似事件 24 小時通知與配合調查條款</label></li>
+      <li><input type="checkbox" id="c12"><label for="c12"><span class="when w3">一個月內</span>以本個案辦理供應鏈個資外洩桌上演練，並向管理審查報告</label></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= 13. 資料來源 ================= -->
+<section class="block" id="refs">
+  <div class="sec-head reveal">
+    <div class="sec-num">13</div>
+    <div><h2>資料來源與注意事項</h2><p>完整連結請見「相關新聞、公告與連結」章節</p></div>
+  </div>
+  <div class="grid g2">
+    <div class="card reveal">
+      <h3>📰 主要來源</h3>
+      <ul class="sources">
+        <li><a href="https://www.businesstoday.com.tw/article/category/183030/post/202610300008/" target="_blank" rel="noopener">今周刊：91APP 資料庫遭駭！⋯1329 個品牌遭殃⋯補償方式一次看（2026-10-30）</a></li>
+        <li><a href="https://www.businesstoday.com.tw/article/category/183030/post/202610190005/" target="_blank" rel="noopener">今周刊：收到「定期購」詐騙信別上當！⋯業者祭 5 措施因應（2026-10-19）</a></li>
+        <li><a href="https://91app.com/blog/91app-202610-security-incident/" target="_blank" rel="noopener">91APP《2026 遭受駭客攻擊事件 18 天調查報告》（2026-10-22）</a></li>
+        <li><a href="https://moda.gov.tw/ADI/news/latest-news/21118" target="_blank" rel="noopener">數位產業署新聞稿</a></li>
+        <li><a href="https://www.bnext.com.tw/article/92706/91app-database-attack-scam-emails" target="_blank" rel="noopener">數位時代</a>、<a href="https://www.ithome.com.tw/news/179872" target="_blank" rel="noopener">iThome</a>、<a href="https://en.sedaily.com/international/2026/10/20/chinese-ai-hacking-tool-used-on-korean-banks-also-hit" target="_blank" rel="noopener">Seoul Economic Daily</a>、<a href="https://www.digitaltoday.co.kr/en/view/115187/theori-releases-in-depth-analysis-white-paper-on-ai-hacking-tool-artex" target="_blank" rel="noopener">Digital Today（Theori）</a></li>
+      </ul>
+    </div>
+    <div class="card reveal d1">
+      <h3>⚠️ 資料差異說明</h3>
+      <ul class="sources">
+        <li><b>調查報告版本：</b>91APP 官網目前可讀到的是 10/22《18 天調查報告》；1,329 個品牌、4,798,255 名消費者與 2025/4/4 起的期間，來自 10/29 說明（今周刊稱《25 天調查報告》）之媒體報導。</li>
+        <li><b>漏洞編號：</b>91APP 僅說明 Appsmith「未更新套件」，未公布 CVE；本頁提及的 Appsmith CVE 僅為背景參考。</li>
+        <li><b>發現時間：</b>91APP 稱 10/4 首次接獲通報；另有品牌稱 10/5 發現異常、16 日才獲正式說明。</li>
+        <li><b>ARTEX 歸因：</b>南韓、日本案例的工具歸因與受害數字來自資安業者與媒體，部分未經官方確認。</li>
+        <li><b>資安院公告：</b>本站讀取時頁面內文未顯示，僅引用標題。</li>
+        <li><b>PHP 漏洞分數：</b>今周刊稱 9.8 分，PHP2Shell 官方評分為 CVSS v4.0 9.2（見個案 #001）。</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site">
+  <div class="container">
+    <div class="cast">
+      <img src="../../assets/img/characters/allan-smile.png" alt="Allan Lo">
+      <img src="../../assets/img/characters/arale-laugh.png" alt="阿拉蕾">
+    </div>
+    <div>從新聞，看個案｜新聞導讀：Allan Lo 顧問 × AI 小助手阿拉蕾<br><span class="small">本站內容為教育訓練用途之個案整理，不構成法律或專業顧問意見。</span></div>
+    <div><a href="../2026-10-php2shell/index.html">← 個案 #001</a>　｜　<a href="../../index.html">回個案總覽</a>　｜　<a href="../2026-10-synology-c3rb3r/index.html">個案 #003 →</a></div>
+  </div>
+</footer>
+
+<div class="helper">
+  <div class="tipbox"><button class="close" aria-label="關閉提示">✕</button><span></span></div>
+  <img src="../../assets/img/characters/arale-wave.png" alt="AI 小助手阿拉蕾（點我顯示提示）">
+</div>
+
+<script src="../../assets/js/main.js"></script>
+</body>
+</html>

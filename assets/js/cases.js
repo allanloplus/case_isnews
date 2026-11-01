@@ -15,7 +15,7 @@
    ========================================================== */
 window.CASES = [
   {
-    id: '#002',
+    id: '#003',
     slug: '2026-10-synology-c3rb3r',
     title: '群暉 NAS 遭 C3RB3R 勒索軟體攻擊：被遺忘的更新與備份',
     summary: '攻擊者鎖定未更新的群暉 NAS，將檔案加密為 .L0CK3D 並勒索比特幣。入侵途徑各方說法不一，但「沒更新、對外曝露、備份放同一台」是共同破口。附互動式勒索攻防模擬器。',
@@ -23,9 +23,22 @@ window.CASES = [
     date: '2026-10-30',
     source: 'iThome 新聞',
     type: 'news',
-    thumb: 'assets/img/cases/002-synology-c3rb3r.svg',
+    thumb: 'assets/img/cases/003-synology-c3rb3r.svg',
     severity: '重大',
     topics: ['勒索軟體', '漏洞管理', '備份與復原', '事件應變', '供應鏈']
+  },
+  {
+    id: '#002',
+    slug: '2026-10-91app-breach',
+    title: '91APP 資料庫遭 AI 代理攻擊：一個未更新的內部工具，波及 1,329 個品牌',
+    summary: '電商 SaaS 平台 91APP 因內部工具 Appsmith 未更新，被 AI 自主滲透工具 ARTEX 打入，攻擊者再從 GitLab 取得資料庫金鑰，最多 479 萬名消費者訂單個資受影響。「先查明再通知」的取捨、SaaS 供應鏈與個資責任一次看。',
+    created: '2026-11-01T08:30',
+    date: '2026-10-30',
+    source: '今周刊',
+    type: 'news',
+    thumb: 'assets/img/cases/002-91app-breach.svg',
+    severity: '重大',
+    topics: ['個資保護', '供應鏈', 'AI 資安', '事件應變', '漏洞管理']
   },
   {
     id: '#001',
