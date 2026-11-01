@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>個案 #001｜AI 揪出潛藏十多年的 PHP 漏洞：PHP2Shell 與資安雙面刃｜從新聞，看個案</title>
+<meta name="description" content="從非凡新聞《全球新觀點》報導出發，以個案研究方式解析 PHP2Shell（CVE-2026-109618／109619）：事件時間軸、技術原理、全球影響、AI 雙面刃，以及管理、技術、法律、企業因應四大面向的討論題與顧問參考答案。">
+<link rel="stylesheet" href="../../assets/css/style.css">
+<link rel="icon" href="../../assets/img/characters/arale-laugh.png">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="container">
+    <a class="brand" href="../../index.html"><span class="logo">🔎</span><span>從新聞，看個案</span></a>
+    <nav class="toc" aria-label="本頁目錄">
+      <a href="#guide">新聞導讀</a>
+      <a href="#source">原始報導</a>
+      <a href="#background">個案背景</a>
+      <a href="#timeline">事件時間軸</a>
+      <a href="#tech">技術解析</a>
+      <a href="#impact">影響範圍</a>
+      <a href="#response">各方因應</a>
+      <a href="#ai">AI 雙面刃</a>
+      <a href="#keypoints">重點整理</a>
+      <a href="#discussion">問題討論</a>
+      <a href="#audit">稽核視角</a>
+      <a href="#checklist">行動清單</a>
+      <a href="#refs">資料來源</a>
+    </nav>
+  </div>
+  <div class="progress"></div>
+</header>
+
+<!-- ================= HERO ================= -->
+<section class="hero">
+  <div class="container">
+    <div>
+      <div class="eyebrow">
+        <span class="tag hot">個案 #001</span>
+        <span class="tag teal">影片新聞</span>
+        <span class="tag">漏洞管理</span><span class="tag">事件應變</span><span class="tag">AI 資安</span>
+      </div>
+      <h1>AI 揪出潛藏十多年的<span style="white-space:nowrap"> PHP 漏洞</span><br><span class="hl">PHP2Shell 與資安雙面刃</span></h1>
+      <p class="lead">全球約七成網站使用的 PHP 爆出可「免登入遠端執行程式碼」的重大漏洞，發現者不是傳統的人工稽核，而是 AI。修補還沒上線，攻擊就已經開始；日本首相深夜呼籲企業「今晚就處理」，歐洲多國政府網站暫時下線。這是一場關於<b>漏洞管理、事件應變</b>與 <b>AI 時代攻防速度</b>的真實演練。</p>
+      <div class="hero-meta">
+        <div>📺 來源：<b>非凡商業台《全球新觀點》</b></div>
+        <div>🗓 播出：<b>2026-10-29</b></div>
+        <div>🧩 CVE：<b>CVE-2026-109618／109619</b></div>
+        <div>⚠️ CVSS v4.0：<b>9.2（緊急）</b></div>
+      </div>
+    </div>
+    <div class="hero-cast" aria-hidden="true">
+      <img class="allan" src="../../assets/img/characters/allan-full.png" alt="">
+      <img class="arale" src="../../assets/img/characters/arale-present.png" alt="">
+    </div>
+  </div>
+  <div class="ticker" aria-hidden="true">
+    <div class="track">
+      <span>PHP 官方 10/21 緊急釋出 8.5.12／8.4.27／8.3.36／8.2.35</span>
+      <span>Calif 與 Wiz 分別借助 AI 發現漏洞，部分程式碼可追溯至 PHP 5.4</span>
+      <span>日本首相高市早苗：「今晚就請處理」</span>
+      <span>Cloudflare：消息曝光後數小時內攔截數十萬次攻擊嘗試</span>
+      <span>數發部資安署呼籲機關、學校、企業盡速盤點與更新</span>
+      <span>CERT-EU：無法立即修補者，考慮暫時下線對外網站</span>
+      <span>PHP 官方 10/21 緊急釋出 8.5.12／8.4.27／8.3.36／8.2.35</span>
+      <span>Calif 與 Wiz 分別借助 AI 發現漏洞，部分程式碼可追溯至 PHP 5.4</span>
+      <span>日本首相高市早苗：「今晚就請處理」</span>
+      <span>Cloudflare：消息曝光後數小時內攔截數十萬次攻擊嘗試</span>
+      <span>數發部資安署呼籲機關、學校、企業盡速盤點與更新</span>
+      <span>CERT-EU：無法立即修補者，考慮暫時下線對外網站</span>
+    </div>
+  </div>
+</section>
+
+<main class="container">
+
+<!-- ================= 1. 新聞導讀 ================= -->
+<section class="block" id="guide" data-tip="嗨！我是<b>阿拉蕾</b>～跟著 Allan 顧問一起，把一則新聞拆成一堂資安管理課吧！" data-tip-img="../../assets/img/characters/arale-wave.png">
+  <div class="sec-head reveal">
+    <div class="sec-num">01</div>
+    <div><h2>新聞導讀</h2><p>Allan Lo 顧問 × AI 小助手阿拉蕾，三分鐘帶你看懂這則新聞</p></div>
+  </div>
+  <div class="dialogue">
+    <div class="say arale">
+      <div class="avatar"><img src="../../assets/img/characters/arale-surprised.png" alt="阿拉蕾"></div>
+      <div class="bubble"><span class="who">阿拉蕾</span><p>Allan 老師！新聞說 AI 挖出 PHP 藏了十幾年的漏洞，全世界的網站都在緊急維護，連日本首相都半夜發文了耶！這到底有多嚴重？</p></div>
+    </div>
+    <div class="say allan">
+      <div class="avatar"><img src="../../assets/img/characters/allan-smile.png" alt="Allan Lo 顧問"></div>
+      <div class="bubble"><span class="who">Allan Lo 顧問</span><p>這次的關鍵字有三個：<b>「免登入」、「遠端執行程式碼」、「七成網站」</b>。攻擊者不用帳號密碼，送幾個特製請求就可能接管你的網站主機。PHP 又是 WordPress、Drupal、Joomla 這些網站系統的底層，影響面非常廣。</p></div>
+    </div>
+    <div class="say arale">
+      <div class="avatar"><img src="../../assets/img/characters/arale-think.png" alt="阿拉蕾"></div>
+      <div class="bubble"><span class="who">阿拉蕾</span><p>可是……我們公司官網是外包廠商做的，我也不知道有沒有用 PHP 耶？</p></div>
+    </div>
+    <div class="say allan">
+      <div class="avatar"><img src="../../assets/img/characters/allan-point.png" alt="Allan Lo 顧問"></div>
+      <div class="bubble"><span class="who">Allan Lo 顧問</span><p>這就是本個案最值得企業反省的地方！在 ISMS 的語言裡，這叫<b>資產盤點</b>與<b>技術脆弱性管理</b>。不知道自己有什麼，就不可能在漏洞公開的那一晚做出正確決策。</p></div>
+    </div>
+    <div class="say arale">
+      <div class="avatar"><img src="../../assets/img/characters/arale-confused.png" alt="阿拉蕾"></div>
+      <div class="bubble"><span class="who">阿拉蕾</span><p>那「AI 是雙面刃」又是什麼意思？AI 幫忙找到漏洞不是好事嗎？</p></div>
+    </div>
+    <div class="say allan">
+      <div class="avatar"><img src="../../assets/img/characters/allan-think.png" alt="Allan Lo 顧問"></div>
+      <div class="bubble"><span class="who">Allan Lo 顧問</span><p>好事，但只對「修得夠快」的人是好事。防守方能用 AI 找漏洞，攻擊方也能用 AI 把修補程式反推成攻擊程式。這次修補還沒正式釋出，攻擊就已經出現了。<b>「從公開到被攻擊」的時間，已經從幾週縮短到幾小時。</b></p></div>
+    </div>
+    <div class="say arale">
+      <div class="avatar"><img src="../../assets/img/characters/arale-fight.png" alt="阿拉蕾"></div>
+      <div class="bubble"><span class="who">阿拉蕾</span><p>了解！那我們就照「個案研究」的方式：先看事件、再拆技術、最後從<b>管理、技術、法律、企業因應</b>四個面向來討論！</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 2. 原始報導 ================= -->
+<section class="block" id="source" data-tip="建議先看完影片，再往下對照文字整理，印象會更深喔！" data-tip-img="../../assets/img/characters/arale-explain.png">
+  <div class="sec-head reveal">
+    <div class="sec-num">02</div>
+    <div><h2>原始報導</h2><p>AI 揪出潛藏多年漏洞！資安雙面刃引爆危機｜PHP 爆十多年最嚴重漏洞！全球網站陷資安危機</p></div>
+  </div>
+  <div class="grid g2">
+    <div class="video-wrap reveal">
+      <iframe src="https://www.youtube-nocookie.com/embed/QgToNoNc34E" title="AI揪出潛藏多年漏洞! 資安雙面刃引爆危機 PHP爆十多年最嚴重漏洞!全球網站陷資安危機│全球新觀點 20261029" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    </div>
+    <div class="card reveal d1">
+      <h3>📌 個案基本資料</h3>
+      <dl class="factbox">
+        <dt>報導來源</dt><dd>非凡商業台《全球新觀點》（2026-10-29）</dd>
+        <dt>事件名稱</dt><dd>PHP2Shell（PHP 遠端程式碼執行漏洞）</dd>
+        <dt>漏洞編號</dt><dd>CVE-2026-109618、CVE-2026-109619</dd>
+        <dt>漏洞類型</dt><dd>記憶體使用後釋放（Use-After-Free, CWE-416）等記憶體安全問題</dd>
+        <dt>嚴重程度</dt><dd>CVSS v4.0 9.2（緊急）；免身分驗證、可遠端利用</dd>
+        <dt>發現方式</dt><dd>資安公司 Calif、Wiz 分別借助 AI 模型分析 PHP 原始碼</dd>
+        <dt>修補版本</dt><dd>8.5.12／8.4.27／8.3.36／8.2.35（以 PHP 官方公告為準）</dd>
+        <dt>個案主題</dt><dd>技術脆弱性管理、緊急變更、事件應變、供應鏈與 AI 資安</dd>
+      </dl>
+      <p class="note small" style="margin-top:14px">本個案依影片主題與多家公開報導（見文末資料來源）交叉整理改寫。各來源對數字、時序說法不一處，已於內文標註。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 3. 個案背景 ================= -->
+<section class="block" id="background" data-tip="PHP 就像網站的「引擎」，WordPress 是「車身」。引擎有問題，換多漂亮的車身都沒用！" data-tip-img="../../assets/img/characters/arale-think.png">
+  <div class="sec-head reveal">
+    <div class="sec-num">03</div>
+    <div><h2>個案背景：為什麼是 PHP？</h2><p>理解「底層元件」漏洞為何比單一系統漏洞更可怕</p></div>
+  </div>
+  <div class="grid g3">
+    <div class="card reveal">
+      <h3>🧱 網站的共同地基</h3>
+      <p>PHP 是伺服器端程式語言，依 W3Techs 統計，在可辨識後端語言的網站中約占 <b>七成</b>。WordPress、Drupal、Joomla、許多電商與形象網站，以及不少設備的 Web 管理介面都建立在 PHP 上。</p>
+    </div>
+    <div class="card reveal d1">
+      <h3>🕰 十多年的技術債</h3>
+      <p>研究者指出，問題程式碼最早可追溯至 <b>PHP 5.4</b>，「過去十年發布的幾乎每個版本」都受至少一項漏洞影響。同時約有三成以上網站仍在跑官方已不支援（EOL）的版本。</p>
+    </div>
+    <div class="card reveal d2">
+      <h3>🤖 AI 改變了遊戲規則</h3>
+      <p>過去這類深藏在記憶體管理中的瑕疵，需要頂尖研究員長時間投入。這次是研究員借助 AI 模型閱讀、推理 PHP 原始碼後找到，並快速驗證可在 WordPress、Drupal 等系統上做到免登入接管。</p>
+    </div>
+  </div>
+  <div class="card reveal" style="margin-top:20px">
+    <h3>🍔 用「漢堡」理解影響層次</h3>
+    <div class="table-scroll">
+    <table class="tbl">
+      <thead><tr><th>層次</th><th>例子</th><th>這次有沒有事？</th><th>只更新這層夠嗎？</th></tr></thead>
+      <tbody>
+        <tr><td>應用程式／外掛</td><td>WordPress、佈景主題、外掛、自寫程式</td><td>不是漏洞所在，但會被當成入口</td><td><span class="chip bad">不夠</span></td></tr>
+        <tr><td><b>語言執行環境</b></td><td><b>PHP 引擎（mod_php、PHP-FPM、php-cgi、FrankenPHP、LiteSpeed）</b></td><td><span class="chip bad">漏洞所在</span></td><td><span class="chip ok">必須更新</span></td></tr>
+        <tr><td>Web 伺服器</td><td>Apache、Nginx、LiteSpeed</td><td>作為承載 PHP 的通道</td><td><span class="chip warn">依架構</span></td></tr>
+        <tr><td>作業系統／容器映像</td><td>Linux 發行版套件、Docker image</td><td>PHP 常隨 OS 套件或映像一起出貨</td><td><span class="chip warn">需重建映像</span></td></tr>
+        <tr><td>邊界防護</td><td>WAF、CDN（Cloudflare、Akamai 等）</td><td>可提供虛擬修補，爭取時間</td><td><span class="chip warn">只是補償控制</span></td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 4. 時間軸 ================= -->
+<section class="block" id="timeline" data-tip="注意看紅點！從消息外洩到攻擊出現，只差幾個小時⋯⋯" data-tip-img="../../assets/img/characters/arale-surprised.png">
+  <div class="sec-head reveal">
+    <div class="sec-num">04</div>
+    <div><h2>事件時間軸</h2><p>從 AI 發現、協調揭露、提前曝光，到全球緊急應變（2026 年）</p></div>
+  </div>
+  <div class="grid g2">
+    <div class="timeline">
+      <div class="fill"></div>
+      <div class="tl-phase">PHASE 1 · 發現</div>
+      <div class="tl-item"><div class="tl-date">08/01 前後</div><h4>Calif 借助 GPT-5.6 Sol 發現問題</h4><p>研究員 Ryan Austin 在檢視 PHP 原始碼時借助 AI 模型找到漏洞，並通知 OpenAI。</p></div>
+      <div class="tl-item"><div class="tl-date">08/11</div><h4>通報 PHP 安全團隊</h4><p>Calif 執行長 Thai Duong 聯繫 PHP 團隊，並警告：修補一旦公開，可能有人用 AI 反推攻擊程式。</p></div>
+      <div class="tl-item"><div class="tl-date">08/19 – 08/24</div><h4>Wiz 獨立發現並驗證</h4><p>Wiz Research 結合自家平台與 Gemini 4 Argon、GPT-5.6 Sol，確認可對 Drupal、WordPress 免登入 RCE，並於 8/24 通報。</p></div>
+      <div class="tl-phase">PHASE 2 · 協調揭露</div>
+      <div class="tl-item"><div class="tl-date">09/21</div><h4>PHP 確認並啟動協調修補</h4><p>修補範圍大（報導指涉及近 200 個檔案、上萬行程式碼），原定 10/22 公開。</p></div>
+      <div class="tl-item alert"><div class="tl-date">10/17</div><h4>疑似利用嘗試提前出現</h4><p>Amazon 蜜罐偵測到疑似攻擊嘗試，比正式揭露早約四天。</p></div>
+      <div class="tl-item alert"><div class="tl-date">10/20 深夜</div><h4>消息於 Hacker News 外洩</h4><p>論壇貼文預告兩個 PHP RCE 漏洞與 CVE 編號，攻擊嘗試隨即增加，PHP 決定將公開時程提前。</p></div>
+      <div class="tl-phase">PHASE 3 · 全球應變</div>
+      <div class="tl-item"><div class="tl-date">10/21 03:02 UTC</div><h4>CDN 先上虛擬修補</h4><p>Cloudflare 開始自動部署防火牆規則，免費方案用戶也涵蓋。</p></div>
+      <div class="tl-item alert"><div class="tl-date">10/21 傍晚（日本）</div><h4>日本首相發文「今晚就請處理」</h4><p>高市早苗於修補釋出前約一小時在 X 呼籲企業當晚應對，並指暫停網站是降低風險的有效方式之一。</p></div>
+      <div class="tl-item"><div class="tl-date">10/21 14:00 UTC</div><h4>PHP 釋出緊急更新</h4><p>台灣時間 22:00 公開修補版本與公告，全球進入修補競賽。</p></div>
+      <div class="tl-item alert"><div class="tl-date">10/21 晚間</div><h4>大規模攻擊嘗試</h4><p>Cloudflare 回報攻擊嘗試由數萬、數十萬到「數百萬」次；AWS 表示已出現廣泛利用。</p></div>
+      <div class="tl-item"><div class="tl-date">10/22</div><h4>台灣資安署發布呼籲</h4><p>透過資安警訊、N-ISAC、TWCERT/CC 通知各界盤點、更新、檢視日誌；必要時以 WAF 阻擋或暫停服務。</p></div>
+      <div class="tl-item"><div class="tl-date">10/29</div><h4>非凡《全球新觀點》專題報導</h4><p>以「AI 資安雙面刃」角度回顧事件。</p></div>
+    </div>
+    <div>
+      <div class="card reveal" style="position:sticky; top:84px">
+        <h3>⏱ 關鍵觀察：時間被壓縮了</h3>
+        <p>傳統漏洞管理常以「公告後 30 天內修補高風險漏洞」作為 KPI。本案中：</p>
+        <div class="grid g2" style="margin:14px 0">
+          <div class="stat red" style="padding:16px 10px"><div class="num" data-count="4" data-suffix="<small>天</small>">0</div><div class="label">攻擊早於正式揭露</div><div class="src">Amazon 蜜罐觀察</div></div>
+          <div class="stat red" style="padding:16px 10px"><div class="num" data-count="45" data-suffix="<small>分鐘</small>">0</div><div class="label">消息曝光後出現數萬次嘗試</div><div class="src">Cloudflare 執行長</div></div>
+        </div>
+        <p class="small muted">這代表「看到新聞再開會、排下週維護窗口」的節奏已經跟不上。企業需要的是<b>事前授權的緊急變更機制</b>與<b>可立即執行的補償控制</b>。</p>
+        <p class="note warn small" style="margin:0">各來源對外洩時間點、是否已有實際入侵說法不一（例如 watchTowr 在 10/21 時表示尚未見實際利用，AWS 與 Cloudflare 則回報大量攻擊）。教學時可作為「情資不一致時如何決策」的討論素材。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 5. 技術解析 ================= -->
+<section class="block" id="tech" data-tip="按「播放」看看攻擊者是怎麼一步步接管伺服器的！🔴 紅色代表惡意狀態。" data-tip-img="../../assets/img/characters/arale-holo.png">
+  <div class="sec-head reveal">
+    <div class="sec-num">05</div>
+    <div><h2>技術解析：PHP2Shell 怎麼運作？</h2><p>概念性說明（不含攻擊細節），幫助管理者理解「為什麼應用層看不到」</p></div>
+  </div>
+
+  <div class="attack reveal" data-attack>
+    <h3>🎬 攻擊流程動畫</h3>
+    <div class="attack-stage">
+      <div class="packet"></div>
+      <div class="node"><div class="ico">🕵️</div><b>攻擊者</b><span>未經身分驗證的 HTTP 請求</span></div>
+      <div class="node"><div class="ico">📦</div><b>PHP 請求解析</b><span>multipart 上傳／Session 上傳進度處理</span></div>
+      <div class="node danger"><div class="ico">💥</div><b>觸發致命錯誤</b><span>記憶體不足（OOM）等 fatal error</span></div>
+      <div class="node danger"><div class="ico">🧟</div><b>Worker 殘留受損狀態</b><span>Use-After-Free／跨請求型別混淆</span></div>
+      <div class="node danger"><div class="ico">🏴‍☠️</div><b>伺服器失守</b><span>記憶體外洩 → 遠端執行程式碼</span></div>
+    </div>
+    <div class="attack-caption">按下「播放攻擊流程」，或用「下一步」逐步觀看。</div>
+    <div class="controls">
+      <button class="btn" data-act="play">▶ 播放攻擊流程</button>
+      <button class="btn ghost" data-act="prev">◀ 上一步</button>
+      <button class="btn ghost" data-act="next">下一步 ▶</button>
+      <button class="btn ghost" data-act="reset">↺ 重設</button>
+      <div class="step-dots"></div>
+    </div>
+    <script type="application/json">[
+      {"node":0,"title":"不需要帳號，任何人都能發動","text":"攻擊者對任何執行受影響 PHP 版本的網站送出特製請求。研究者指出，就算網站只是一個「Hello World」頁面也可能受影響——因為問題不在你的程式，而在 PHP 引擎本身。"},
+      {"node":1,"title":"在你的程式執行之前就出事","text":"PHP 在把請求交給 WordPress 等應用程式之前，會先解析 multipart 上傳與 Session 上傳進度。漏洞就藏在這段「應用程式碰不到」的底層流程裡。"},
+      {"node":2,"title":"刻意製造致命錯誤","text":"攻擊者讓 PHP 在處理過程中發生記憶體不足等致命錯誤。理論上錯誤後應該把狀態清乾淨，但 PHP 的錯誤處理路徑長期存在瑕疵。","evil":true},
+      {"node":3,"title":"被「重複使用」的 Worker 留下地雷","text":"為了效能，PHP-FPM、mod_php 等會重複使用 worker 行程。失敗的請求留下「已釋放卻仍被參照」的記憶體（Use-After-Free, CWE-416），或 OPcache 共享記憶體造成跨 worker 型別混淆。","evil":true},
+      {"node":4,"title":"記憶體外洩，進而遠端執行程式碼","text":"後續請求踩到受損狀態：可透過 PHPSESSID 等回應帶出行程記憶體內容（可能含金鑰、連線字串），最終達成遠端程式碼執行（RCE），伺服器被接管。","evil":true},
+      {"node":4,"title":"為什麼難以察覺？","text":"整個過程發生在應用程式之下，<b>應用層日誌幾乎沒有痕跡</b>。可觀察的訊號是：異常 multipart 請求後伴隨記憶體上限錯誤或大量 HTTP 500、異常巨大或格式錯誤的 PHPSESSID cookie、不明原因的 PHP worker 重啟。","evil":true}
+    ]</script>
+  </div>
+
+  <div class="grid g3" style="margin-top:20px">
+    <div class="card reveal">
+      <h3>🎯 受影響範圍</h3>
+      <ul>
+        <li>所有<b>處理網頁請求</b>的 PHP 部署：Apache + mod_php、PHP-FPM、php-cgi、FrankenPHP、LiteSpeed</li>
+        <li>研究者實證：<code>wordpress:latest</code>、<code>drupal:latest</code>、<code>joomla:latest</code> 皆可免登入 RCE</li>
+        <li>回溯至 PHP 5.4 的多個版本</li>
+      </ul>
+    </div>
+    <div class="card reveal d1">
+      <h3>🩹 修補與緩解</h3>
+      <ul>
+        <li><b>唯一完整解法：更新 PHP</b>（8.5.12／8.4.27／8.3.36／8.2.35）</li>
+        <li>8.1 以下：官方僅提供原始碼修補，需自行編譯，或規劃升級</li>
+        <li>WAF／CDN 虛擬修補：爭取時間，不能取代更新</li>
+        <li>調整記憶體與上傳大小限制：官方表示<b>無法完全阻止</b>攻擊</li>
+      </ul>
+    </div>
+    <div class="card reveal d2">
+      <h3>🔍 修補後別忘了</h3>
+      <ul>
+        <li>檢查 Web 目錄是否有不明檔案（Webshell／後門）</li>
+        <li>檢查異常排程（cron）、新增帳號</li>
+        <li>因有<b>記憶體外洩</b>風險：輪替資料庫密碼、API 金鑰、Session 密鑰、憑證</li>
+        <li>重建容器映像，而不只是更新執行中的容器</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 6. 影響範圍 ================= -->
+<section class="block" id="impact" data-tip="不同機構的數字差很多，因為「量的東西」不一樣。看數字前先問：分母是什麼？" data-tip-img="../../assets/img/characters/arale-think.png">
+  <div class="sec-head reveal">
+    <div class="sec-num">06</div>
+    <div><h2>影響範圍</h2><p>數字會說話，但要先搞清楚它在量什麼</p></div>
+  </div>
+  <div class="grid g4">
+    <div class="card stat reveal"><div class="num" data-count="69.3" data-suffix="<small>%</small>">0</div><div class="label">網站後端使用 PHP</div><div class="src">W3Techs 2026/10（可辨識後端語言者）</div></div>
+    <div class="card stat red reveal d1"><div class="num" data-count="35" data-suffix="<small>%</small>">0</div><div class="label">約略執行不受支援版本</div><div class="src">W3Techs 版本分布推估</div></div>
+    <div class="card stat teal reveal d2"><div class="num" data-count="9.2">0</div><div class="label">CVSS v4.0 分數</div><div class="src">兩個 CVE 皆為 9.2</div></div>
+    <div class="card stat reveal d3"><div class="num" data-count="28000" data-suffix="<small>+</small>">0</div><div class="label">台灣對外 PHP 網站</div><div class="src">資安署（含約 200 個政府網站）</div></div>
+  </div>
+  <div class="card reveal" style="margin-top:20px">
+    <h3>📊 曝險主機數：各家說法對照</h3>
+    <div class="table-scroll">
+      <table class="tbl">
+        <thead><tr><th>來源</th><th>數字</th><th>量測的是什麼</th></tr></thead>
+        <tbody>
+          <tr><td>Censys</td><td>約 260 萬台（其中約 150 萬台版本尚無官方修補）</td><td>網際網路上回報 PHP 版本的主機</td></tr>
+          <tr><td>VirusTotal（BleepingComputer 引述）</td><td>約 510 萬台</td><td>曝露在外的 PHP 主機</td></tr>
+          <tr><td>Mallory</td><td>約 88.4 萬台</td><td>執行 PHP 8.1 或更舊版本的連網主機</td></tr>
+          <tr><td>Palo Alto Unit 42</td><td>約 2,260 萬個</td><td>「潛在受影響執行個體」</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="small muted" style="margin:12px 0 0">💡 顧問提醒：向管理階層報告時，請同時說明數字來源與定義，避免「七成網際網路」這類標題式數字被誤用為風險評估依據。真正該問的是：<b>「我們有幾台？在哪裡？誰負責？」</b></p>
+  </div>
+</section>
+
+<!-- ================= 7. 各方因應 ================= -->
+<section class="block" id="response" data-tip="日本這次很多大企業選擇「先關站再修」。關站是不是過度反應？等等在問題討論會聊到！" data-tip-img="../../assets/img/characters/arale-explain.png">
+  <div class="sec-head reveal">
+    <div class="sec-num">07</div>
+    <div><h2>各國與企業因應</h2><p>「先關站」vs.「帶傷運轉」——不同組織的風險決策</p></div>
+  </div>
+  <div class="grid g2">
+    <div class="card region jp reveal">
+      <h3>🇯🇵 日本：首相親自喊話，企業大量「預防性關站」</h3>
+      <ul>
+        <li>首相高市早苗於 X 發文：「今晚就請處理」，並指暫停網站是有效降低風險的方式之一</li>
+        <li>ANA、JAL 暫時關閉企業官網；JR 西日本關閉約 60 個集團網站</li>
+        <li>三菱 UFJ 銀行暫停部分線上服務；靜岡銀行、77 銀行部分受影響</li>
+        <li>SEGA、pixiv、niconico、BASE、櫻花網路等暫停全部或部分服務；財務省暫停部分網頁</li>
+        <li>網路報導連演員阿部寬著名的「極簡官網」也罕見進入維護（單一來源報導）</li>
+      </ul>
+    </div>
+    <div class="card region eu reveal d1">
+      <h3>🇪🇺 歐洲：政府帶頭暫停公共服務</h3>
+      <ul>
+        <li>荷蘭 NCSC 暫停部分服務，鹿特丹港、政府入口網、部分醫院網站受影響</li>
+        <li>芬蘭 Valtori 預防性下線政府對外網站；丹麥 Kombit 關閉多項服務（含全國學校溝通平台）</li>
+        <li>法國內政部所有網站進入預防性維護模式</li>
+        <li>CERT-EU：無法立即修補者，建議將對外網站下線；英國 NCSC：允許修補前先下線</li>
+        <li>維基百科部分系統、Internet Archive 短暫離線</li>
+      </ul>
+    </div>
+    <div class="card region us reveal">
+      <h3>🇺🇸 美國：情資與雲端業者動員</h3>
+      <ul>
+        <li>白宮表示 10/17 即已得知並協調聯邦機關；FBI、NSA 發布聲明呼籲更新</li>
+        <li>AWS：揭露前已在蜜罐觀察到攻擊，揭露後出現廣泛利用</li>
+        <li>Cloudflare、Akamai、Fastly、Google Cloud、Vercel 等陸續推出 WAF 規則</li>
+        <li>OpenAI 召集維護者、研究者、資安業者與政府組成協調聯盟</li>
+      </ul>
+    </div>
+    <div class="card region tw reveal d1">
+      <h3>🇹🇼 台灣：資安署五步驟建議</h3>
+      <ol>
+        <li><b>盤點</b>所有 PHP 系統與套件</li>
+        <li><b>確認版本</b>，依官方公告完成更新</li>
+        <li><b>檢視日誌</b>與異常存取；有可疑跡象時檢查相關帳號與憑證</li>
+        <li>無法立即更新者，以 <b>WAF</b> 阻擋攻擊</li>
+        <li>前兩者皆不可行時，才考慮<b>暫停服務</b></li>
+      </ol>
+      <p class="small muted" style="margin:8px 0 0">可向 TWCERT/CC 尋求協助。</p>
+    </div>
+  </div>
+  <div class="card reveal" style="margin-top:20px; display:flex; gap:18px; align-items:center">
+    <img src="../../assets/img/characters/allan-think.png" alt="Allan Lo 顧問" style="width:96px; flex:none">
+    <p style="margin:0"><b>Allan 顧問觀點：</b>注意台灣資安署的順序是「修補 → WAF → 才關站」，而日本許多企業是「先關站 → 再修補」。兩者沒有絕對對錯，差別在於<b>組織是否事前就定義好「誰有權在什麼條件下關站」</b>。能在一小時內做出關站決策的企業，通常早就把它寫進營運持續計畫（BCP）與緊急變更程序裡了。</p>
+  </div>
+</section>
+
+<!-- ================= 8. AI 雙面刃 ================= -->
+<section class="block" id="ai" data-tip="AI 本身沒有善惡，差別在誰用得比較快、比較好。" data-tip-img="../../assets/img/characters/arale-holo.png">
+  <div class="sec-head reveal">
+    <div class="sec-num">08</div>
+    <div><h2>AI：資安的雙面刃</h2><p>同一把刀，防守方拿來找漏洞，攻擊方拿來寫攻擊程式</p></div>
+  </div>
+  <div class="sword reveal">
+    <div class="side def">
+      <h3>🛡 防守方的 AI</h3>
+      <ul>
+        <li>閱讀龐大原始碼，找出人類十多年沒發現的瑕疵</li>
+        <li>協助撰寫概念驗證、偵測規則、驗證修補是否有效</li>
+        <li>開源專案定期自動掃描（AI 業者推出免費掃描計畫）</li>
+        <li>Google DeepMind：前沿 AI 是網路防禦的「遊戲規則改變者」</li>
+      </ul>
+    </div>
+    <div class="balance" aria-hidden="true"><div class="ai">AI</div><div class="beam"></div><div class="pole"></div><div class="base"></div></div>
+    <div class="side off">
+      <h3>⚔️ 攻擊方的 AI</h3>
+      <ul>
+        <li>拿到修補程式差異（patch diff），用 AI 快速反推攻擊方式</li>
+        <li>大規模、自動化掃描全球曝險主機</li>
+        <li>把「理解弱點」到「可用的攻擊程式」的時間大幅縮短</li>
+        <li>OpenAI：同樣能力「也能幫攻擊者快速開發攻擊工具」</li>
+      </ul>
+    </div>
+  </div>
+  <div class="grid g3" style="margin-top:20px">
+    <div class="card reveal"><h4>🔄 漏洞「通膨」</h4><p class="small muted" style="margin:0">AI 讓漏洞發現量上升，企業將面對更多、更頻繁的緊急修補。修補能力（人力、流程、測試環境）會成為新的瓶頸。</p></div>
+    <div class="card reveal d1"><h4>⏩ 揭露時程更難保密</h4><p class="small muted" style="margin:0">多方各自用 AI 發現同一漏洞、協調揭露的參與者變多，消息外洩、時程被迫提前的機率上升。</p></div>
+    <div class="card reveal d2"><h4>🧭 治理必須跟上</h4><p class="small muted" style="margin:0">企業若要在自身開發或測試導入 AI，需同時規範授權範圍、資料保護與結果驗證（可參考 ISO/IEC 42001 AI 管理系統）。</p></div>
+  </div>
+</section>
+
+<!-- ================= 9. 重點整理 ================= -->
+<section class="block" id="keypoints" data-tip="這 8 點是本個案的精華，適合做成教育訓練簡報喔！" data-tip-img="../../assets/img/characters/arale-thumb.png">
+  <div class="sec-head reveal">
+    <div class="sec-num">09</div>
+    <div><h2>個案重點整理</h2><p>八個帶得走的觀念</p></div>
+  </div>
+  <div class="keypoints">
+    <div class="card kp reveal"><h4>底層元件漏洞＝供應鏈風險</h4><p>漏洞不在你寫的程式，而在你「依賴」的語言執行環境。資產清冊必須盤到元件與版本層級（SBOM）。</p></div>
+    <div class="card kp reveal d1"><h4>免登入 RCE 是最高優先等級</h4><p>CVSS 9.2、無需驗證、可遠端利用、且有公開關注，符合「立即處理」條件，不應排入一般維護窗口。</p></div>
+    <div class="card kp reveal"><h4>EOL 版本是定時炸彈</h4><p>8.1 以下只有原始碼修補。長期不升級的系統，在緊急時刻將面臨「無法修補」的窘境。</p></div>
+    <div class="card kp reveal d1"><h4>攻擊可能早於公告</h4><p>本案攻擊比正式揭露早約四天。威脅情資與異常偵測，是「修補之前」唯一的防線。</p></div>
+    <div class="card kp reveal"><h4>補償控制要預先準備</h4><p>WAF／CDN 虛擬修補、網段隔離、暫停服務等手段，需事先建置與演練，才能在數小時內啟用。</p></div>
+    <div class="card kp reveal d1"><h4>關站是合理的風險決策</h4><p>關站換取時間，本質是「可用性 vs. 機密性／完整性」的取捨，需要事前授權與明確觸發條件。</p></div>
+    <div class="card kp reveal"><h4>修補≠結案</h4><p>有記憶體外洩風險時，需輪替金鑰與憑證、檢查後門，並保存證據以利後續鑑識與法遵通報。</p></div>
+    <div class="card kp reveal d1"><h4>AI 加速攻防兩端</h4><p>漏洞發現與利用的速度同時提升，「從公開到被攻擊」縮短至小時級，漏洞管理 KPI 與流程需要重新設計。</p></div>
+  </div>
+</section>
+
+<!-- ================= 10. 問題討論 ================= -->
+<section class="block" id="discussion" data-tip="先自己想一想，再點開 Allan 顧問的參考答案。答案沒有標準，重點是思考脈絡！" data-tip-img="../../assets/img/characters/arale-think.png">
+  <div class="sec-head reveal">
+    <div class="sec-num">10</div>
+    <div><h2>問題討論與顧問參考答案</h2><p>管理｜技術｜法律｜企業因應 四大面向</p></div>
+  </div>
+
+  <div class="tabs" role="tablist" aria-label="討論面向">
+    <button class="tab" role="tab" aria-selected="true" aria-controls="p-mgmt" id="t-mgmt">🧭 管理面 <span class="n">4</span></button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="p-tech" id="t-tech">🛠 技術面 <span class="n">4</span></button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="p-law" id="t-law">⚖️ 法律面 <span class="n">4</span></button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="p-biz" id="t-biz">🏢 企業因應 <span class="n">4</span></button>
+    <button class="btn dark" data-expand="#discussion" style="margin-left:auto">展開全部參考答案</button>
+  </div>
+
+  <!-- ===== 管理面 ===== -->
+  <div class="panel" id="p-mgmt" role="tabpanel" aria-labelledby="t-mgmt">
+    <div class="panel-intro"><img src="../../assets/img/characters/arale-explain.png" alt=""><p><b>阿拉蕾：</b>管理面要問的是「制度有沒有準備好」——資產、風險、決策權責與技術債。</p></div>
+
+    <details class="qa card">
+      <summary><span class="qid">M1</span><span class="qtext">漏洞公告當晚，貴公司能在 1 小時內回答「我們有哪些系統用了 PHP？版本是多少？誰負責？」嗎？若不能，問題出在哪裡？<small>關鍵字：資產盤點、SBOM、影子 IT、外部攻擊面</small></span><span class="toggle"><span class="t-open">顧問參考答案</span><span class="t-close">收合</span></span></summary>
+      <div class="answer">
+        <div class="who"><img src="../../assets/img/characters/allan-point.png" alt="">Allan Lo 顧問</div>
+        <div>
+          <h5>常見的盲點</h5>
+          <ul>
+            <li>資產清冊只盤到「主機」或「系統名稱」，沒有盤到<b>軟體元件與版本</b>。</li>
+            <li>行銷活動網站、委外建置的官網、子公司網站、舊專案測試機屬於<b>影子 IT</b>，不在 IT 管轄內。</li>
+            <li>NAS、防火牆、印表機、IoT 設備的 Web 管理介面也可能內含 PHP，卻被歸類為「設備」。</li>
+            <li>雲端 SaaS／虛擬主機的責任歸屬不清，以為「主機商會處理」。</li>
+          </ul>
+          <h5>建議作法</h5>
+          <ol>
+            <li>資產清冊延伸至元件層級，對自建與委外系統要求提供 <b>SBOM</b>，並與弱點掃描結果串接。<span class="ctrl-ref">A.5.9</span><span class="ctrl-ref">A.8.8</span></li>
+            <li>導入<b>外部攻擊面管理（EASM）</b>：定期從外部掃描公司網域、IP 段，找出未登錄的對外服務。</li>
+            <li>每筆資產都有明確的<b>擁有者（Owner）</b>與<b>技術聯絡窗口</b>，含委外廠商的緊急聯絡方式。<span class="ctrl-ref">A.5.9</span></li>
+            <li>委外合約與供應商清單中標註「使用之主要技術元件」。<span class="ctrl-ref">A.5.21</span></li>
+          </ol>
+          <div class="tip"><b>💡 衡量指標：</b>「從重大漏洞公告到完成受影響資產清單」所需時間（Mean Time to Inventory）。成熟組織應能在 1–4 小時內完成。</div>
+        </div>
+      </div>
+    </details>
+
+    <details class="qa card">
+      <summary><span class="qid">M2</span><span class="qtext">日本多家企業選擇「先關站再修補」，台灣資安署則建議「修補 → WAF → 最後才關站」。關站的決策應由誰做？依據什麼條件？<small>關鍵字：風險接受、營運衝擊分析、緊急決策授權</small></span><span class="toggle"><span class="t-open">顧問參考答案</span><span class="t-close">收合</span></span></summary>
+      <div class="answer">
+        <div class="who"><img src="../../assets/img/characters/allan-think.png" alt="">Allan Lo 顧問</div>
+        <div>
+          <h5>本質：可用性 vs. 機密性／完整性的取捨</h5>
+          <p>關站犧牲可用性，換取不被入侵（保護機密性與完整性）。是否值得，取決於「被入侵的衝擊」與「停機的衝擊」何者較大。</p>
+          <h5>建議建立「緊急停機決策矩陣」</h5>
+          <div class="table-scroll"><table class="tbl">
+            <thead><tr><th>條件</th><th>建議動作</th><th>決策者</th></tr></thead>
+            <tbody>
+              <tr><td>可在數小時內修補，且已有 WAF 規則</td><td>啟用 WAF → 緊急修補</td><td>資安主管／IT 主管</td></tr>
+              <tr><td>無法立即修補，系統含個資或交易功能</td><td>預防性下線或改為靜態維護頁</td><td>資安長（CISO）依預先授權</td></tr>
+              <tr><td>核心營收系統，停機衝擊大</td><td>隔離＋強化監控＋限制來源，並向高階報告剩餘風險</td><td>總經理／風險委員會</td></tr>
+              <tr><td>已有入侵跡象</td><td>立即隔離，啟動事件應變</td><td>事件應變小組</td></tr>
+            </tbody>
+          </table></div>
+          <h5>制度面要點</h5>
+          <ul>
+            <li>事前在 BCP／事件應變程序中<b>預先授權</b>資安長在特定條件下可直接下令停機，事後補報。<span class="ctrl-ref">A.5.24</span><span class="ctrl-ref">A.5.29</span></li>
+            <li>停機決策的依據應來自<b>營運衝擊分析（BIA）</b>中的最大可容忍中斷時間（MTPD）。<span class="ctrl-ref">A.5.30</span></li>
+            <li>決策過程、依據與時間點應留下紀錄，作為事後檢討與稽核證據。</li>
+          </ul>
+          <div class="tip"><b>💡 顧問經驗：</b>深夜無法聯絡到有權限的主管，是企業延誤處置最常見的原因。請確認「代理人機制」與「緊急聯絡樹」真的能用。</div>
+        </div>
+      </div>
+    </details>
+
+    <details class="qa card">
+      <summary><span class="qid">M3</span><span class="qtext">約三成以上網站仍執行官方不再支援的 PHP 版本。企業該如何治理「技術債」與 EOL 軟體？<small>關鍵字：生命週期管理、風險登錄、預算規劃</small></span><span class="toggle"><span class="t-open">顧問參考答案</span><span class="t-close">收合</span></span></summary>
+      <div class="answer">
+        <div class="who"><img src="../../assets/img/characters/allan-worried.png" alt="">Allan Lo 顧問</div>
+        <div>
+          <h5>為什麼 EOL 系統特別危險</h5>
+          <p>本案中 PHP 8.1 以下僅提供原始碼修補，需自行編譯；許多委外系統或老舊系統根本找不到人處理。平時「還能跑」的系統，在緊急時刻會變成「無法修補」的系統。</p>
+          <h5>治理建議</h5>
+          <ol>
+            <li>訂定<b>技術生命週期政策</b>：主要元件（OS、語言、資料庫、框架）在 EOL 前 6–12 個月須完成升級規劃。<span class="ctrl-ref">A.8.8</span><span class="ctrl-ref">A.8.32</span></li>
+            <li>無法升級者列入<b>風險登錄表</b>，由資產擁有者正式簽署風險接受，並訂定補償控制與到期日。（ISO 27001 第 6.1.3 節風險處理）</li>
+            <li>將升級成本納入<b>年度預算與系統開發合約</b>，例如要求委外廠商提供版本升級維護服務。<span class="ctrl-ref">A.5.20</span></li>
+            <li>每季向管理審查會議報告 EOL 資產數量與趨勢。（第 9.3 節管理審查）</li>
+          </ol>
+          <div class="tip"><b>💡 給管理階層的一句話：</b>技術債就像信用卡循環利息，平時看不出來，出事時一次結清，而且利率很高。</div>
+        </div>
+      </div>
+    </details>
+
+    <details class="qa card">
+      <summary><span class="qid">M4</span><span class="qtext">本案漏洞在正式公告前就已外洩、攻擊早於修補。組織如何「比新聞更早知道」？威脅情資應如何融入管理制度？<small>關鍵字：威脅情資、資安聯防、情資處理流程</small></span><span class="toggle"><span class="t-open">顧問參考答案</span><span class="t-close">收合</span></span></summary>
+      <div class="answer">
+        <div class="who"><img src="../../assets/img/characters/allan-smile.png" alt="">Allan Lo 顧問</div>
+        <div>
+          <h5>情資來源分層</h5>
+          <ul>
+            <li><b>官方：</b>資安署資安警訊、N-ISAC／各領域 ISAC、TWCERT/CC、CISA KEV 清單、PHP 官方公告。</li>
+            <li><b>供應商：</b>雲端、CDN、WAF、主機代管業者的安全通報。</li>
+            <li><b>社群：</b>資安媒體、研究機構部落格、技術論壇（需交叉驗證）。</li>
+          </ul>
+          <h5>從「收到情資」到「採取行動」的流程</h5>
+          <ol>
+            <li>指定專人或服務負責情資收集與初步分析。<span class="ctrl-ref">A.5.7</span></li>
+            <li>建立分級標準：例如「免驗證 RCE＋影響我方資產」即觸發緊急程序。</li>
+            <li>情資與資產清冊自動比對，直接產出受影響清單。<span class="ctrl-ref">A.5.9</span></li>
+            <li>保存情資處理紀錄，作為 ISMS 運作與稽核證據。</li>
+          </ol>
+          <div class="tip"><b>💡 稽核觀察：</b>許多組織在 A.5.7 只有「有訂閱情資」的證據，卻沒有「情資如何轉化為行動」的紀錄。這是驗證稽核時常見的改善事項。</div>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- ===== 技術面 ===== -->
+  <div class="panel" id="p-tech" role="tabpanel" aria-labelledby="t-tech" hidden>
+    <div class="panel-intro"><img src="../../assets/img/characters/arale-holo.png" alt=""><p><b>阿拉蕾：</b>技術面聚焦在「怎麼修、修不了怎麼辦、怎麼知道有沒有被打」。</p></div>
+
+    <details class="qa card">
+      <summary><span class="qid">T1</span><span class="qtext">這次漏洞發生在應用程式之下，應用層日誌幾乎看不到痕跡。SOC／MIS 該如何偵測是否已遭攻擊？<small>關鍵字：日誌、監控、入侵指標</small></span><span class="toggle"><span class="t-open">顧問參考答案</span><span class="t-close">收合</span></span></summary>
+      <div class="answer">
+        <div class="who"><img src="../../assets/img/characters/allan-think.png" alt="">Allan Lo 顧問</div>
+        <div>
+          <h5>可觀察的訊號（依研究者建議整理）</h5>
+          <ul>
+            <li>異常的 multipart 上傳請求，之後緊接著 <b>memory limit 錯誤</b>或<b>大量 HTTP 500</b>。</li>
+            <li>回應中出現<b>異常巨大或格式錯誤的 PHPSESSID cookie</b>（記憶體外洩的跡象）。</li>
+            <li>PHP-FPM worker <b>不明原因頻繁重啟</b>、崩潰（segfault）紀錄。</li>
+            <li>Web 行程帳號（如 www-data）產生子行程、對外連線、寫入 Web 目錄。</li>
+          </ul>
+          <h5>需要哪些日誌？</h5>
+          <ul>
+            <li>Web 伺服器存取／錯誤日誌、PHP-FPM 日誌、系統日誌（含 segfault）。<span class="ctrl-ref">A.8.15</span></li>
+            <li>WAF／CDN 日誌（看是否有規則命中）。</li>
+            <li>端點偵測（EDR）或主機層行程監控。<span class="ctrl-ref">A.8.16</span></li>
+            <li>對外連線的網路流量紀錄。</li>
+          </ul>
+          <div class="tip"><b>💡 實務建議：</b>回溯檢查期間至少涵蓋<b>正式揭露前 1–2 週</b>（本案攻擊早於公告約四天）。另外，日誌必須集中保存在 Web 主機以外的地方，否則主機失守時日誌也可能被竄改。</div>
+        </div>
+      </div>
+    </details>
+
+    <details class="qa card">
+      <summary><span class="qid">T2</span><span class="qtext">如果因為相容性、委外廠商或 EOL 等因素無法立即更新 PHP，有哪些補償控制？各有什麼限制？<small>關鍵字：虛擬修補、隔離、縮小攻擊面</small></span><span class="toggle"><span class="t-open">顧問參考答案</span><span class="t-close">收合</span></span></summary>
+      <div class="answer">
+        <div class="who"><img src="../../assets/img/characters/allan-point.png" alt="">Allan Lo 顧問</div>
+        <div>
+          <div class="table-scroll"><table class="tbl">
+            <thead><tr><th>補償控制</th><th>效果</th><th>限制</th></tr></thead>
+            <tbody>
+              <tr><td>WAF／CDN 虛擬修補</td><td>可在數小時內上線，阻擋已知攻擊特徵</td><td>可能被變形繞過；只保護經過 CDN 的流量，來源 IP 若外洩可直接打主機</td></tr>
+              <tr><td>限制來源存取</td><td>後台、內部系統改為僅 VPN／特定 IP 可連</td><td>不適用於對外公開網站</td></tr>
+              <tr><td>調整記憶體與上傳大小限制</td><td>降低部分觸發條件</td><td>PHP 官方明言<b>無法完全阻止</b>攻擊</td></tr>
+              <tr><td>改為靜態頁面</td><td>形象網站可改輸出靜態 HTML，完全移除 PHP 執行</td><td>互動功能（表單、會員）需暫停</td></tr>
+              <tr><td>暫停服務</td><td>完全消除曝險</td><td>影響營運與商譽</td></tr>
+            </tbody>
+          </table></div>
+          <h5>重點</h5>
+          <ul>
+            <li>補償控制是<b>爭取時間</b>，不是解決方案；需同時訂定更新的完成期限。<span class="ctrl-ref">A.8.8</span></li>
+            <li>使用 CDN 時，記得確認<b>來源主機只接受 CDN 的連線</b>，避免被繞過。<span class="ctrl-ref">A.8.20</span></li>
+            <li>緊急變更仍需留下紀錄與事後補核准。<span class="ctrl-ref">A.8.32</span></li>
+          </ul>
+        </div>
+      </div>
+    </details>
+
+    <details class="qa card">
+      <summary><span class="qid">T3</span><span class="qtext">完成更新後就可以宣告結案了嗎？還需要做哪些事？<small>關鍵字：事後鑑識、金鑰輪替、映像重建</small></span><span class="toggle"><span class="t-open">顧問參考答案</span><span class="t-close">收合</span></span></summary>
+      <div class="answer">
+        <div class="who"><img src="../../assets/img/characters/allan-surprised.png" alt="">Allan Lo 顧問</div>
+        <div>
+          <p>不行！更新只是「把門關上」，但要確認<b>小偷是不是已經在屋子裡</b>。</p>
+          <h5>修補後檢查清單</h5>
+          <ol>
+            <li><b>確認更新生效：</b>檢查實際執行中的 PHP 版本（不只是套件版本），重啟所有 PHP-FPM／Web 服務。</li>
+            <li><b>容器環境：</b>重建映像並重新部署，而非只在執行中的容器內更新。</li>
+            <li><b>後門檢查：</b>Web 目錄內不明 PHP 檔、最近修改的檔案、異常排程、新增帳號、SSH 金鑰。</li>
+            <li><b>機敏資訊輪替：</b>由於漏洞可外洩行程記憶體，資料庫密碼、API Key、Session 加密金鑰、TLS 私鑰等應評估輪替。<span class="ctrl-ref">A.8.24</span></li>
+            <li><b>證據保存：</b>若發現入侵跡象，先保全日誌與映像，再進行清除，以利鑑識與法遵通報。<span class="ctrl-ref">A.5.28</span></li>
+            <li><b>經驗學習：</b>召開事後檢討，更新程序與演練劇本。<span class="ctrl-ref">A.5.27</span></li>
+          </ol>
+        </div>
+      </div>
+    </details>
+
+    <details class="qa card">
+      <summary><span class="qid">T4</span><span class="qtext">AI 能在開源程式中找出十多年的漏洞。企業自己的開發與測試流程，該如何善用 AI？又要注意什麼？<small>關鍵字：安全開發、AI 輔助程式碼審查、AI 治理</small></span><span class="toggle"><span class="t-open">顧問參考答案</span><span class="t-close">收合</span></span></summary>
+      <div class="answer">
+        <div class="who"><img src="../../assets/img/characters/allan-laugh.png" alt="">Allan Lo 顧問</div>
+        <div>
+          <h5>可以這樣用</h5>
+          <ul>
+            <li>在 CI/CD 中加入 AI 輔助的程式碼審查與弱點分析，作為 SAST／DAST 的補充。<span class="ctrl-ref">A.8.25</span><span class="ctrl-ref">A.8.28</span><span class="ctrl-ref">A.8.29</span></li>
+            <li>用 AI 協助解讀漏洞公告、比對資產、產出修補優先順序。</li>
+            <li>用 AI 協助撰寫偵測規則與事件分析，提升 SOC 效率。</li>
+          </ul>
+          <h5>要注意的</h5>
+          <ul>
+            <li><b>資料外洩：</b>原始碼、設定檔可能含密碼或機敏邏輯，上傳至外部 AI 服務前需評估並遵循公司政策。<span class="ctrl-ref">A.5.14</span><span class="ctrl-ref">A.5.23</span></li>
+            <li><b>結果驗證：</b>AI 可能誤判或產生幻覺，需由人員驗證後才採取行動。</li>
+            <li><b>授權範圍：</b>只能測試自有或已取得書面授權的系統（見法律面 L4）。</li>
+            <li><b>管理系統：</b>可參考 ISO/IEC 42001 建立 AI 使用政策與風險評鑑。</li>
+          </ul>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- ===== 法律面 ===== -->
+  <div class="panel" id="p-law" role="tabpanel" aria-labelledby="t-law" hidden>
+    <div class="panel-intro"><img src="../../assets/img/characters/arale-confused.png" alt=""><p><b>阿拉蕾：</b>法律面最常被問：「漏洞是 PHP 的錯，為什麼公司要負責？」我們一起來看看！<br><span class="small muted">（以下為一般性說明，不構成法律意見；個案請洽專業律師。）</span></p></div>
+
+    <details class="qa card">
+      <summary><span class="qid">L1</span><span class="qtext">若公司網站因未及時更新 PHP 而遭入侵、導致會員個資外洩，公司可以主張「漏洞是 PHP 的問題」而免責嗎？<small>關鍵字：個資法第 27 條、第 29 條、適當安全維護措施</small></span><span class="toggle"><span class="t-open">顧問參考答案</span><span class="t-close">收合</span></span></summary>
+      <div class="answer">
+        <div class="who"><img src="../../assets/img/characters/allan-point.png" alt="">Allan Lo 顧問</div>
+        <div>
+          <h5>原則上很難免責</h5>
+          <ul>
+            <li><b>個資法第 27 條：</b>非公務機關保有個資檔案者，應採行<b>適當之安全措施</b>。在官方已釋出修補、主管機關公開呼籲的情況下仍長期未處理，很難主張已盡適當安全維護義務。</li>
+            <li><b>個資法第 29 條：</b>非公務機關違反規定致當事人權益受損，應負損害賠償責任，但<b>能證明無故意或過失者不在此限</b>——舉證責任在企業端。</li>
+            <li><b>個資法第 48 條：</b>未採行適當安全措施，主管機關可處罰鍰並令限期改正；情節重大者罰鍰更高。</li>
+            <li><b>第 12 條：</b>個資被竊取、洩漏時，應查明後以適當方式<b>通知當事人</b>。</li>
+          </ul>
+          <h5>企業能做的「舉證準備」</h5>
+          <ul>
+            <li>保存漏洞情資收到時間、評估紀錄、修補或補償控制的執行時間。</li>
+            <li>保存決策紀錄（例如為何選擇 WAF 而非關站）。</li>
+            <li>平時的弱點掃描、修補 SLA 達成率報表。</li>
+          </ul>
+          <div class="tip"><b>💡 顧問提醒：</b>「我們有在做」和「我們能證明有在做」是兩回事。ISMS 的紀錄，就是法律上的舉證素材。</div>
+        </div>
+      </div>
+    </details>
+
+    <details class="qa card">
+      <summary><span class="qid">L2</span><span class="qtext">若確認遭入侵，企業有哪些通報義務與時限？上市櫃公司、受資安法規範者、有歐盟客戶者分別要注意什麼？<small>關鍵字：資通安全管理法、重大訊息、GDPR、NIS2</small></span><span class="toggle"><span class="t-open">顧問參考答案</span><span class="t-close">收合</span></span></summary>
+      <div class="answer">
+        <div class="who"><img src="../../assets/img/characters/allan-think.png" alt="">Allan Lo 顧問</div>
+        <div>
+          <div class="table-scroll"><table class="tbl">
+            <thead><tr><th>適用對象</th><th>主要規範</th><th>重點時限／義務</th></tr></thead>
+            <tbody>
+              <tr><td>公務機關、特定非公務機關（關鍵基礎設施提供者等）</td><td>資通安全管理法及資通安全事件通報及應變辦法</td><td>知悉資安事件後 <b>1 小時內</b>通報；依事件等級於期限內完成損害控制或復原（第 1、2 級 72 小時；第 3、4 級 36 小時）</td></tr>
+              <tr><td>上市、上櫃公司</td><td>證交所／櫃買中心重大訊息規範、上市上櫃公司資通安全管控指引</td><td>發生重大資安事件，應依規定發布<b>重大訊息</b>並說明影響與因應</td></tr>
+              <tr><td>保有個資之企業</td><td>個人資料保護法、各目的事業主管機關之個資安全維護辦法</td><td>通知當事人；部分產業須於規定期限內通報主管機關</td></tr>
+              <tr><td>處理歐盟個資者</td><td>GDPR 第 33、34 條</td><td>知悉後 <b>72 小時內</b>通報監管機關；高風險時通知當事人</td></tr>
+              <tr><td>歐盟境內重要／基本實體</td><td>NIS2 指令</td><td>24 小時早期預警、72 小時事件通報、1 個月最終報告</td></tr>
+              <tr><td>在歐盟銷售含數位元素產品之製造商</td><td>歐盟網路韌性法（CRA）</td><td>自 2026/9/11 起，遭積極利用之漏洞須於 24 小時內提出早期預警</td></tr>
+            </tbody>
+          </table></div>
+          <div class="tip"><b>💡 實務建議：</b>事件應變程序中應預先整理「通報對象、時限、窗口、範本」一覽表，避免事件發生時才開始查法條。<span class="ctrl-ref">A.5.24</span><span class="ctrl-ref">A.5.31</span></div>
+        </div>
+      </div>
+    </details>
+
+    <details class="qa card">
+      <summary><span class="qid">L3</span><span class="qtext">網站由委外廠商開發、架設在虛擬主機或雲端上。若因廠商未更新 PHP 而出事，責任如何分配？合約該怎麼寫？<small>關鍵字：委外管理、共同責任模型、合約條款</small></span><span class="toggle"><span class="t-open">顧問參考答案</span><span class="t-close">收合</span></span></summary>
+      <div class="answer">
+        <div class="who"><img src="../../assets/img/characters/allan-confused.png" alt="">Allan Lo 顧問</div>
+        <div>
+          <h5>先釐清：責任可以委外，當責不能委外</h5>
+          <p>對當事人與主管機關而言，企業仍是個資的蒐集者與保有者，必須對受託者盡<b>監督義務</b>（個資法施行細則亦要求委託機關對受託者為適當監督）。廠商的過失，企業通常只能事後依合約求償。</p>
+          <h5>共同責任模型要說清楚</h5>
+          <ul>
+            <li><b>IaaS／VM：</b>OS 與 PHP 更新通常是客戶責任。</li>
+            <li><b>共享虛擬主機／PaaS：</b>多半由業者負責 PHP 版本，但需確認是否允許客戶自選舊版。</li>
+            <li><b>委外開發維運：</b>依合約約定，未約定時常陷入「互相以為對方會處理」。</li>
+          </ul>
+          <h5>建議合約條款</h5>
+          <ol>
+            <li>重大漏洞（如 CVSS ≥ 9 或主管機關警示）之<b>修補時限</b>，例如 24–72 小時內修補或提出補償控制。</li>
+            <li>廠商知悉資安事件之<b>通報時限</b>與窗口。</li>
+            <li>維護期間內的<b>元件版本升級義務</b>與費用約定，避免 EOL。</li>
+            <li><b>稽核權</b>與配合鑑識義務、日誌保存期限。</li>
+            <li>違約責任、損害賠償上限與資安保險要求。</li>
+          </ol>
+          <p><span class="ctrl-ref">A.5.19</span><span class="ctrl-ref">A.5.20</span><span class="ctrl-ref">A.5.21</span><span class="ctrl-ref">A.5.22</span><span class="ctrl-ref">A.5.23</span></p>
+        </div>
+      </div>
+    </details>
+
+    <details class="qa card">
+      <summary><span class="qid">L4</span><span class="qtext">員工聽說 AI 可以找漏洞，就拿 AI 工具去掃描合作廠商或競爭對手的網站「看看有沒有中」。這樣有法律風險嗎？<small>關鍵字：妨害電腦使用罪、授權測試、負責任揭露</small></span><span class="toggle"><span class="t-open">顧問參考答案</span><span class="t-close">收合</span></span></summary>
+      <div class="answer">
+        <div class="who"><img src="../../assets/img/characters/allan-worried.png" alt="">Allan Lo 顧問</div>
+        <div>
+          <h5>有，而且風險不小</h5>
+          <ul>
+            <li>刑法第 36 章<b>妨害電腦使用罪</b>（第 358 條起）規範無故入侵他人電腦、無故取得或變更電磁紀錄、干擾電腦系統等行為。未經授權發送攻擊請求驗證漏洞，可能構成相關罪責。</li>
+            <li>即使出於好意，未經授權的掃描也可能觸發對方事件應變、造成服務中斷，衍生民事求償。</li>
+            <li>員工以公司設備、公司名義為之，公司亦可能面臨商譽與法律風險。</li>
+          </ul>
+          <h5>正確作法</h5>
+          <ul>
+            <li>只測試<b>自有系統</b>或取得<b>書面授權</b>（明確範圍、時間、方法）的系統。</li>
+            <li>發現他人系統漏洞時，循<b>負責任揭露</b>管道通報（如對方漏洞通報窗口、TWCERT/CC），參考 ISO/IEC 29147。</li>
+            <li>公司政策明訂 AI 工具與資安測試工具的使用規範。<span class="ctrl-ref">A.5.10</span><span class="ctrl-ref">A.6.2</span></li>
+          </ul>
+          <div class="tip"><b>💡 對照本案：</b>Calif 與 Wiz 發現漏洞後，都是先私下通報 PHP 官方、配合協調揭露時程，這就是負責任揭露的示範。</div>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- ===== 企業因應 ===== -->
+  <div class="panel" id="p-biz" role="tabpanel" aria-labelledby="t-biz" hidden>
+    <div class="panel-intro"><img src="../../assets/img/characters/arale-fight.png" alt=""><p><b>阿拉蕾：</b>企業因應要回答的是：「下次再發生，我們能不能做得更好？」</p></div>
+
+    <details class="qa card">
+      <summary><span class="qid">E1</span><span class="qtext">請為貴公司設計一份「重大底層元件漏洞」的 0–72 小時應變劇本（Playbook）。<small>關鍵字：事件應變、緊急變更、劇本演練</small></span><span class="toggle"><span class="t-open">顧問參考答案</span><span class="t-close">收合</span></span></summary>
+      <div class="answer">
+        <div class="who"><img src="../../assets/img/characters/allan-point.png" alt="">Allan Lo 顧問</div>
+        <div>
+          <div class="table-scroll"><table class="tbl">
+            <thead><tr><th>時間</th><th>行動</th><th>負責</th></tr></thead>
+            <tbody>
+              <tr><td><b>T+0～1h</b></td><td>情資確認與分級；啟動應變小組；從資產清冊／EASM 產出受影響清單</td><td>資安窗口</td></tr>
+              <tr><td><b>T+1～4h</b></td><td>啟用 WAF／CDN 規則；高風險系統限制來源或預防性下線；通知委外廠商與主機業者</td><td>IT／資安主管</td></tr>
+              <tr><td><b>T+4～24h</b></td><td>測試並部署更新（依預先核准的緊急變更程序）；確認版本生效；開始回溯日誌</td><td>系統管理者、廠商</td></tr>
+              <tr><td><b>T+24～48h</b></td><td>入侵跡象檢查、後門掃描；評估並執行金鑰／憑證輪替；處理 EOL 系統的替代方案</td><td>資安團隊／SOC</td></tr>
+              <tr><td><b>T+48～72h</b></td><td>判斷是否構成通報事件；向高階管理報告剩餘風險；恢復暫停之服務</td><td>CISO、法務</td></tr>
+              <tr><td><b>T+2 週內</b></td><td>事後檢討：時效、瓶頸、決策品質；更新程序並排入下次演練</td><td>ISMS 推動小組</td></tr>
+            </tbody>
+          </table></div>
+          <p style="margin-top:12px"><span class="ctrl-ref">A.5.24</span><span class="ctrl-ref">A.5.25</span><span class="ctrl-ref">A.5.26</span><span class="ctrl-ref">A.5.27</span><span class="ctrl-ref">A.8.32</span></p>
+          <div class="tip"><b>💡 演練建議：</b>可直接以本個案作為年度桌上演練（Tabletop Exercise）情境，並刻意在「凌晨 1 點、主管出國」等條件下測試決策鏈。</div>
+        </div>
+      </div>
+    </details>
+
+    <details class="qa card">
+      <summary><span class="qid">E2</span><span class="qtext">若決定暫停網站，對客戶、員工與媒體該如何溝通？日本企業的做法有什麼值得參考？<small>關鍵字：危機溝通、商譽管理</small></span><span class="toggle"><span class="t-open">顧問參考答案</span><span class="t-close">收合</span></span></summary>
+      <div class="answer">
+        <div class="who"><img src="../../assets/img/characters/allan-smile.png" alt="">Allan Lo 顧問</div>
+        <div>
+          <h5>溝通原則</h5>
+          <ul>
+            <li><b>主動、簡潔、不恐慌：</b>說明「為了預防性的資安維護」，而不是「我們被駭了」（若尚無入侵證據）。</li>
+            <li><b>提供替代管道：</b>客服電話、實體門市、App 等，降低對客戶的影響。</li>
+            <li><b>給出預期時間：</b>即使只是「預計 X 時前更新進度」。</li>
+            <li><b>口徑一致：</b>客服、公關、業務使用同一份 Q&amp;A。</li>
+          </ul>
+          <h5>本案觀察</h5>
+          <p>日本大型企業普遍以「系統維護」公告暫停服務，在首相公開呼籲的社會氛圍下，預防性關站反而被視為負責任的表現，商譽衝擊相對有限。這說明<b>社會情境會影響溝通策略的成效</b>。</p>
+          <div class="tip"><b>💡 準備清單：</b>預先準備「預防性維護」、「確認遭入侵」、「服務恢復」三種公告範本與核准流程，納入事件應變程序。<span class="ctrl-ref">A.5.24</span><span class="ctrl-ref">A.5.26</span></div>
+        </div>
+      </div>
+    </details>
+
+    <details class="qa card">
+      <summary><span class="qid">E3</span><span class="qtext">董事會或高階主管看到這則新聞，應該向資安／IT 團隊問哪五個問題？<small>關鍵字：資安治理、董事會監督</small></span><span class="toggle"><span class="t-open">顧問參考答案</span><span class="t-close">收合</span></span></summary>
+      <div class="answer">
+        <div class="who"><img src="../../assets/img/characters/allan-laugh.png" alt="">Allan Lo 顧問</div>
+        <div>
+          <ol>
+            <li><b>我們受影響嗎？</b>有幾個系統、哪些涉及客戶資料或營收？——檢驗資產管理。</li>
+            <li><b>什麼時候能修好？</b>修不了的那些怎麼辦？——檢驗弱點管理與補償控制。</li>
+            <li><b>我們怎麼知道還沒被打？</b>——檢驗監控與偵測能力。</li>
+            <li><b>委外廠商和雲端業者回覆了嗎？</b>——檢驗供應鏈管理。</li>
+            <li><b>如果要關站，誰決定、我們準備好了嗎？</b>——檢驗營運持續與決策授權。</li>
+          </ol>
+          <div class="tip"><b>💡 給高階的提醒：</b>如果這五題的答案都是「要再查一下」，代表需要的不是更多資安工具，而是<b>把管理制度落實</b>。這也是導入 ISO 27001 的核心價值。</div>
+        </div>
+      </div>
+    </details>
+
+    <details class="qa card">
+      <summary><span class="qid">E4</span><span class="qtext">中小企業沒有專職資安人員、官網也只是委外架設的 WordPress，面對這類事件該怎麼辦？<small>關鍵字：資源有限、託管服務、外部支援</small></span><span class="toggle"><span class="t-open">顧問參考答案</span><span class="t-close">收合</span></span></summary>
+      <div class="answer">
+        <div class="who"><img src="../../assets/img/characters/allan-wink.png" alt="">Allan Lo 顧問</div>
+        <div>
+          <h5>務實的五件事</h5>
+          <ol>
+            <li><b>列一張表：</b>公司有哪些網站、誰架的、放在哪家主機、聯絡人電話。一頁 Excel 就夠。</li>
+            <li><b>選對主機方案：</b>優先使用會自動更新 PHP 的代管服務，並在合約中寫明更新責任。</li>
+            <li><b>套上 CDN／WAF：</b>本案中 Cloudflare 連免費方案都自動加上防護規則，成本低、效果快。</li>
+            <li><b>能靜態就靜態：</b>形象網站若無互動功能，可考慮改為靜態網站，大幅減少攻擊面。</li>
+            <li><b>知道去哪求助：</b>TWCERT/CC、所屬產業 ISAC、地方政府資安輔導資源。</li>
+          </ol>
+          <div class="tip"><b>💡 顧問一句話：</b>中小企業不需要做到滿分，但一定要做到「出事時知道打給誰、關得掉、修得了」。</div>
+        </div>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ================= 11. 稽核視角 ================= -->
+<section class="block" id="audit" data-tip="Allan 顧問也是驗證稽核員喔！這張表是稽核時真的會看的證據～" data-tip-img="../../assets/img/characters/arale-thumb.png">
+  <div class="sec-head reveal">
+    <div class="sec-num">11</div>
+    <div><h2>稽核員視角：ISO/IEC 27001:2022 控制措施對照</h2><p>如果明天來驗證稽核，針對本案情境會看哪些證據？</p></div>
+  </div>
+  <div class="card reveal">
+    <div class="table-scroll">
+      <table class="tbl">
+        <thead><tr><th style="width:110px">控制措施</th><th>與本案的關聯</th><th>稽核時會請你提出的證據</th></tr></thead>
+        <tbody>
+          <tr><td><span class="ctrl-ref">A.5.7</span><br>威脅情資</td><td>能否在公告前後即時獲知 PHP2Shell</td><td>情資來源清單、收到情資的時間紀錄、評估與處置紀錄</td></tr>
+          <tr><td><span class="ctrl-ref">A.5.9</span><br>資產清冊</td><td>能否快速找出所有 PHP 系統</td><td>含軟體元件與版本的資產清冊、擁有者、最後更新日期</td></tr>
+          <tr><td><span class="ctrl-ref">A.5.19–5.23</span><br>供應者／雲端</td><td>委外網站與主機商的更新責任</td><td>委外合約資安條款、供應商評鑑紀錄、雲端責任分工說明</td></tr>
+          <tr><td><span class="ctrl-ref">A.5.24–5.28</span><br>事件管理</td><td>應變、分級、決策、證據保存</td><td>事件應變程序、事件紀錄單、通報紀錄、事後檢討報告</td></tr>
+          <tr><td><span class="ctrl-ref">A.5.29–5.30</span><br>營運持續</td><td>關站決策與服務中斷管理</td><td>BIA、BCP、緊急決策授權、演練紀錄</td></tr>
+          <tr><td><span class="ctrl-ref">A.8.8</span><br>技術脆弱性管理</td><td>修補時限、EOL 管理、補償控制</td><td>弱點管理程序（含修補 SLA）、掃描報告、修補完成率、風險接受簽核</td></tr>
+          <tr><td><span class="ctrl-ref">A.8.15–8.16</span><br>日誌與監控</td><td>應用層看不到時的偵測能力</td><td>日誌集中保存設定、保存期限、監控告警規則、回溯分析紀錄</td></tr>
+          <tr><td><span class="ctrl-ref">A.8.20</span><br>網路安全</td><td>WAF／CDN、來源限制</td><td>網路架構圖、WAF 規則變更紀錄、來源主機存取限制設定</td></tr>
+          <tr><td><span class="ctrl-ref">A.8.32</span><br>變更管理</td><td>緊急修補是否有程序可循</td><td>緊急變更程序、變更單、事後補核准紀錄、測試紀錄</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note small" style="margin:14px 0 0">📝 若組織同時建置 ISO/IEC 27701（PIMS），請一併檢視個資處理系統的安全措施、委外處理者管理與個資事件通知程序，確保與個資法第 12、27 條的要求一致。</p>
+  </div>
+</section>
+
+<!-- ================= 12. 行動清單 ================= -->
+<section class="block" id="checklist" data-tip="勾選完成項目，進度會自動儲存在你的瀏覽器裡！" data-tip-img="../../assets/img/characters/arale-fight.png">
+  <div class="sec-head reveal">
+    <div class="sec-num">12</div>
+    <div><h2>企業自我檢核：行動清單</h2><p>看完個案，立刻動手（進度儲存在本機瀏覽器）</p></div>
+  </div>
+  <div class="card reveal">
+    <div style="display:flex; justify-content:space-between; align-items:center"><b>完成度</b><span id="ck-label" class="muted small">0 / 0</span></div>
+    <div class="meter" id="ck-meter"><i></i></div>
+    <ul class="checklist" data-checklist="php2shell" data-meter="#ck-meter" data-meter-label="#ck-label">
+      <li><input type="checkbox" id="c1"><label for="c1"><span class="when">立即</span>列出所有對外與內部使用 PHP 的系統（含委外、子公司、設備管理介面）</label></li>
+      <li><input type="checkbox" id="c2"><label for="c2"><span class="when">立即</span>確認實際執行中的 PHP 版本，已更新至 8.5.12／8.4.27／8.3.36／8.2.35 以上</label></li>
+      <li><input type="checkbox" id="c3"><label for="c3"><span class="when">立即</span>無法更新者已啟用 WAF／CDN 規則、限制來源或暫停服務</label></li>
+      <li><input type="checkbox" id="c4"><label for="c4"><span class="when">立即</span>已聯絡所有委外廠商與主機業者，取得書面回覆</label></li>
+      <li><input type="checkbox" id="c5"><label for="c5"><span class="when w2">一週內</span>回溯檢查揭露前 1–2 週的 Web、PHP-FPM、系統日誌</label></li>
+      <li><input type="checkbox" id="c6"><label for="c6"><span class="when w2">一週內</span>完成後門與異常帳號、排程檢查</label></li>
+      <li><input type="checkbox" id="c7"><label for="c7"><span class="when w2">一週內</span>評估並輪替資料庫密碼、API 金鑰、Session 密鑰</label></li>
+      <li><input type="checkbox" id="c8"><label for="c8"><span class="when w2">一週內</span>容器映像已重建並重新部署</label></li>
+      <li><input type="checkbox" id="c9"><label for="c9"><span class="when w3">一個月內</span>資產清冊補上軟體元件與版本欄位，並建立 EOL 追蹤</label></li>
+      <li><input type="checkbox" id="c10"><label for="c10"><span class="when w3">一個月內</span>事件應變程序加入「緊急停機決策授權」與通報一覽表</label></li>
+      <li><input type="checkbox" id="c11"><label for="c11"><span class="when w3">一個月內</span>委外合約增訂重大漏洞修補時限與通報義務</label></li>
+      <li><input type="checkbox" id="c12"><label for="c12"><span class="when w3">一個月內</span>以本個案辦理一次桌上演練，並向管理審查報告</label></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= 13. 資料來源 ================= -->
+<section class="block" id="refs">
+  <div class="sec-head reveal">
+    <div class="sec-num">13</div>
+    <div><h2>資料來源與延伸閱讀</h2><p>本頁內容以下列來源交叉整理；技術細節以官方公告為準</p></div>
+  </div>
+  <div class="grid g2">
+    <div class="card reveal">
+      <h3>📺 原始報導</h3>
+      <ul class="sources">
+        <li><a href="https://www.youtube.com/watch?v=QgToNoNc34E" target="_blank" rel="noopener">非凡商業台《全球新觀點》：AI 揪出潛藏多年漏洞！資安雙面刃引爆危機（2026-10-29）</a></li>
+      </ul>
+      <h3 style="margin-top:16px">🏛 官方與研究機構</h3>
+      <ul class="sources">
+        <li><a href="https://www.php.net/archive/2026.php" target="_blank" rel="noopener">PHP 官方公告（2026 年新聞存檔）</a></li>
+        <li><a href="https://www.wiz.io/blog/php2shell-php-rce" target="_blank" rel="noopener">Wiz Research：PHP2Shell: AI uncovers critical RCE vulnerabilities</a></li>
+        <li><a href="https://udn.com/news/story/7240/9830164" target="_blank" rel="noopener">聯合新聞網：AI 協助發現 PHP 重大漏洞 資安署籲機關、企業盡速更新</a></li>
+      </ul>
+    </div>
+    <div class="card reveal d1">
+      <h3>📰 新聞報導</h3>
+      <ul class="sources">
+        <li><a href="https://www.taiwannews.com.tw/zh/news/6463032" target="_blank" rel="noopener">台灣英文新聞：AI 揪出 PHP 潛藏數十年重大漏洞 多國網站服務緊急應變</a></li>
+        <li><a href="https://dq.yam.com/post/17078" target="_blank" rel="noopener">DQ 地球圖輯隊：PHP 爆十多年最嚴重漏洞，連阿部寬官網都罕見維護</a></li>
+        <li><a href="https://fortune.com/2026/10/21/ai-tools-discovered-the-php-vulnerability-that-could-take-down-70-of-the-internet-now-the-race-is-on-to-patch-it-before-ai-powered-hackers-attack/" target="_blank" rel="noopener">Fortune：AI helped discover the PHP vulnerability that could take down 70% of the internet</a></li>
+        <li><a href="https://news.cnyes.com/news/id/6635339" target="_blank" rel="noopener">鉅亨網：全球多達七成網站使用的 PHP 出事了！</a></li>
+        <li><a href="https://www.cybersecuritydive.com/news/php-website-vulnerabilities/833580/" target="_blank" rel="noopener">Cybersecurity Dive：Critical PHP vulnerabilities expose most websites</a></li>
+      </ul>
+      <p class="note warn small" style="margin:12px 0 0">各來源對漏洞數量（2 個 CVE 涵蓋 4 個瑕疵）、曝險數字、是否已遭實際利用等說法不一；本頁已盡量標註來源，正式引用前請以官方公告再次確認。</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site">
+  <div class="container">
+    <div class="cast">
+      <img src="../../assets/img/characters/allan-smile.png" alt="Allan Lo">
+      <img src="../../assets/img/characters/arale-laugh.png" alt="阿拉蕾">
+    </div>
+    <div>從新聞，看個案｜新聞導讀：Allan Lo 顧問 × AI 小助手阿拉蕾<br><span class="small">本站內容為教育訓練用途之個案整理，不構成法律或專業顧問意見。</span></div>
+    <div><a href="../../index.html">← 回個案總覽</a></div>
+  </div>
+</footer>
+
+<div class="helper">
+  <div class="tipbox"><button class="close" aria-label="關閉提示">✕</button><span></span></div>
+  <img src="../../assets/img/characters/arale-wave.png" alt="AI 小助手阿拉蕾（點我顯示提示）">
+</div>
+
+<script src="../../assets/js/main.js"></script>
+</body>
+</html>

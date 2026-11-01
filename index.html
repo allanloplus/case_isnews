@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>從新聞，看個案｜Allan Lo 顧問 × AI 小助手阿拉蕾</title>
+<meta name="description" content="把每一則資安新聞，變成一堂資訊安全與個資保護管理課。以個案研究方式整理重點，並提供管理、技術、法律、企業因應四大面向的討論題與顧問參考答案。">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="icon" href="assets/img/characters/arale-laugh.png">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="container">
+    <a class="brand" href="index.html"><span class="logo">🔎</span><span>從新聞，看個案</span></a>
+    <nav class="toc">
+      <a href="#cases">個案總覽</a>
+      <a href="#how">閱讀方式</a>
+      <a href="#hosts">導讀人</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero lib-hero">
+  <div class="container">
+    <div>
+      <div class="eyebrow"><span class="tag teal">ISMS × PIMS 個案教室</span><span class="tag">持續更新</span></div>
+      <h1>從新聞，<span class="hl">看個案</span></h1>
+      <p class="lead">每一則資安新聞，都是別人用真金白銀換來的教材。我們把影片與新聞報導拆解成<b>個案研究</b>：事件始末、技術原理、重點整理，再從<b>管理、技術、法律、企業因應</b>四個面向提出討論題，附上顧問的參考答案。</p>
+      <div class="hero-meta">
+        <div>👨‍💼 導讀：<b>Allan Lo 顧問</b></div>
+        <div>🤖 助教：<b>AI 小助手阿拉蕾</b></div>
+        <div>📚 已收錄：<b id="case-count">0</b> 則個案</div>
+      </div>
+    </div>
+    <div class="hero-cast" aria-hidden="true">
+      <img class="allan" src="assets/img/characters/allan-full.png" alt="">
+      <img class="arale" src="assets/img/characters/arale-full.png" alt="">
+    </div>
+  </div>
+</section>
+
+<main class="container">
+  <section class="block" id="cases">
+    <div class="sec-head">
+      <div class="sec-num">📂</div>
+      <div><h2>個案總覽</h2><p>依日期由新到舊排列，點選卡片進入個案</p></div>
+    </div>
+    <input class="search" type="search" id="q" placeholder="🔍 搜尋標題、摘要或主題…" aria-label="搜尋個案">
+    <div class="filters" id="filters"></div>
+    <div class="case-grid" id="grid"></div>
+  </section>
+
+  <section class="block" id="how">
+    <div class="sec-head">
+      <div class="sec-num">🧭</div>
+      <div><h2>每個個案怎麼讀？</h2><p>建議用於內部教育訓練、讀書會或管理審查前的案例研討</p></div>
+    </div>
+    <div class="howto">
+      <div class="card reveal"><div class="ico">📺</div><h4>1. 看新聞</h4><p>先看原始影片或報導，再由 Allan 與阿拉蕾的對話導讀抓重點。</p></div>
+      <div class="card reveal d1"><div class="ico">🧩</div><h4>2. 拆個案</h4><p>時間軸、技術動畫、影響數據與各方因應，用圖解還原事件全貌。</p></div>
+      <div class="card reveal d2"><div class="ico">💬</div><h4>3. 想問題</h4><p>四大面向討論題，先自己思考，再展開顧問參考答案對照。</p></div>
+      <div class="card reveal d3"><div class="ico">✅</div><h4>4. 做行動</h4><p>對照 ISO 27001 控制措施與稽核證據，用檢核清單落實到組織。</p></div>
+    </div>
+  </section>
+
+  <section class="block" id="hosts">
+    <div class="sec-head">
+      <div class="sec-num">🎙</div>
+      <div><h2>新聞導讀人</h2><p>一位顧問，一位 AI 助手</p></div>
+    </div>
+    <div class="grid g2">
+      <div class="card reveal" style="display:flex; gap:20px; align-items:center">
+        <img src="assets/img/characters/allan-smile.png" alt="Allan Lo 顧問" style="width:130px; flex:none">
+        <div>
+          <h3>Allan Lo 顧問</h3>
+          <p class="muted" style="margin:0">ISMS／PIMS 輔導顧問，兼任驗證機構稽核員，專長資訊安全與企業 MIS 管理。負責每則個案的管理解析與「顧問參考答案」，並從稽核員視角說明該準備哪些證據。</p>
+        </div>
+      </div>
+      <div class="card reveal d1" style="display:flex; gap:20px; align-items:center">
+        <img src="assets/img/characters/arale-laugh.png" alt="AI 小助手阿拉蕾" style="width:130px; flex:none">
+        <div>
+          <h3>AI 小助手 阿拉蕾（ARALE）</h3>
+          <p class="muted" style="margin:0">好奇心滿點的 AI 助教。替讀者問出「最想問但不好意思問」的問題，並在閱讀過程中隨時跳出小提示，把艱深的技術講成人話。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site">
+  <div class="container">
+    <div class="cast">
+      <img src="assets/img/characters/allan-smile.png" alt="Allan Lo">
+      <img src="assets/img/characters/arale-laugh.png" alt="阿拉蕾">
+    </div>
+    <div>從新聞，看個案｜新聞導讀：Allan Lo 顧問 × AI 小助手阿拉蕾<br><span class="small">本站內容為教育訓練用途之個案整理，不構成法律或專業顧問意見。</span></div>
+  </div>
+</footer>
+
+<script src="assets/js/cases.js"></script>
+<script>
+(function () {
+  const cases = (window.CASES || []).slice().sort((a, b) => b.date.localeCompare(a.date));
+  const grid = document.getElementById('grid');
+  const q = document.getElementById('q');
+  const filters = document.getElementById('filters');
+  document.getElementById('case-count').textContent = cases.length;
+  const topics = ['全部', ...new Set(cases.flatMap((c) => c.topics))];
+  let topic = '全部';
+  const esc = (s) => String(s).replace(/[&<>"']/g, (m) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+
+  filters.innerHTML = topics.map((t) => `<button type="button" data-t="${esc(t)}" class="${t === topic ? 'on' : ''}">${esc(t)}</button>`).join('');
+  filters.addEventListener('click', (e) => {
+    const b = e.target.closest('button'); if (!b) return;
+    topic = b.dataset.t;
+    filters.querySelectorAll('button').forEach((x) => x.classList.toggle('on', x === b));
+    render();
+  });
+  q.addEventListener('input', render);
+
+  function render() {
+    const kw = q.value.trim().toLowerCase();
+    const list = cases.filter((c) =>
+      (topic === '全部' || c.topics.includes(topic)) &&
+      (!kw || [c.title, c.summary, c.source, ...c.topics].join(' ').toLowerCase().includes(kw)));
+    grid.innerHTML = list.map((c) => `
+      <a class="card case-card" href="cases/${esc(c.slug)}/index.html">
+        <div class="thumb" style="background-image:linear-gradient(180deg,rgba(11,21,48,.1),rgba(11,21,48,.55)),url('${esc(c.thumb)}')">
+          <span class="tag teal src-type">${c.type === 'video' ? '▶ 影片新聞' : '📰 文字新聞'}</span>
+          <span class="tag hot sev">${esc(c.severity)}</span>
+        </div>
+        <div class="body">
+          <span class="muted small"><b>${esc(c.id)}</b>｜${esc(c.source)}</span>
+          <h3>${esc(c.title)}</h3>
+          <p>${esc(c.summary)}</p>
+          <div class="chips">${c.topics.map((t) => `<span class="chip">${esc(t)}</span>`).join('')}</div>
+          <div class="meta"><span>🗓 ${esc(c.date)}</span><span>閱讀個案 →</span></div>
+        </div>
+      </a>`).join('') +
+      `<div class="card case-card soon"><div class="thumb">NEXT CASE</div><div class="body"><h3>下一則個案整理中…</h3><p>持續追蹤國內外資安與個資事件，敬請期待。</p></div></div>`;
+    if (!list.length) grid.insertAdjacentHTML('afterbegin', '<p class="muted">找不到符合條件的個案。</p>');
+  }
+  render();
+})();
+</script>
+<script src="assets/js/main.js"></script>
+</body>
+</html>
